@@ -13,7 +13,7 @@ if __name__ == '__main__':
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
     usernameInput = driver.find_element(By.ID, "txtUsername")
-    usernameInput.send_keys("ninjadocassino")
+    usernameInput.send_keys("doidodocassino")
 
     time.sleep(0.5)
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     #continueButton = driver.find_element(By.CSS_SELECTOR, ".regulatory-last-login-modal__button")
     #continueButton.click()
 
-    time.sleep(40)
+    time.sleep(60)
 
     #switch to iframe
     #there are nested iframes
@@ -75,68 +75,161 @@ if __name__ == '__main__':
             roulette_element_dic[element.text] = (element.find_element(By.XPATH, '..')).find_element(By.XPATH, '..')
     roulette_all_numbers_array = [element.find_elements(By.TAG_NAME, "div") for element in driver.find_elements(By.CLASS_NAME, roulette_class_name)]
 
-    # creating mask table for each roulette (used for checking patterns later)
-    table = []
-    for i in range(3):
-        subtable = []
-        for j in range(12):
-            subtable.append(0)
-        table.append(subtable)
 
     for roulette in roulette_element_dic:
-        roulette_counting_dic[roulette] = 0
+        roulette_counting_dic[roulette] = {
+            "rua": 0,
+            "canto": 0,
+            "rua_dupla": 0,
+            "dupla": 0,
+            "zero": 0
+        }
+        # creating mask table for each roulette (used for checking patterns later)
+        table = []
+        for i in range(3):
+            subtable = []
+            for j in range(12):
+                subtable.append(0)
+            table.append(subtable)
         roulette_current_tables_dic[roulette] = table
+        print(roulette)
 
         # initializing roulette_last_numbers_dic
-        all_roulette_number_elements = [element for element in roulette_element_dic[roulette].find_element(By.CLASS_NAME, roulette_class_name)]
+        element_parent_of_numbers = roulette_element_dic[roulette].find_element(By.CLASS_NAME, roulette_class_name)
+        print(element_parent_of_numbers.get_attribute("innerHTML"))
+        all_roulette_number_elements = [element for element in element_parent_of_numbers.find_elements(By.TAG_NAME, "div")]
+        print(all_roulette_number_elements)
         roulette_numbers = []
         # gets child of child of roulette number frame (where its actual number is)
-        for number_element in all_roulette_number_elements:
-            child = number_element.find_element(By.TAG_NAME, "div")
-            child_of_child = child.find_element(By.TAG_NAME, "div")
-            roulette_numbers.append(int(child_of_child.text))
+        for i, number_element in enumerate(all_roulette_number_elements):
+            if (i+1) % 3 != 0:
+                continue
+            # child_of_child = number_element.find_elements(By.TAG_NAME, "div")[1]
+            if number_element.text == '':
+                continue
+            roulette_numbers.append(int(number_element.text))
         roulette_last_numbers_dic[roulette] = roulette_numbers
+        print(roulette_numbers)
+
+    #converting number to coordinate on roulette table
+    def number_to_coordinate(num):
+        num_tuple = (2-((number-1)%3), (number-1) // 3)
+        return num_tuple
 
     # initializing roulette_current_tables_dic
     for roulette in roulette_last_numbers_dic:
         for number in roulette_last_numbers_dic[roulette]:
             # bomb bellow (don't know if this works 100%)
-            roulette_current_tables_dic[roulette][number // 12][number % 12] = 1
+            if number == 0:
+                roulette_counting_dic[roulette]["zero"] = 0
+                continue
+            roulette_current_tables_dic[roulette][2-((number-1)%3)][(number-1) // 3] = 1
+            roulette_counting_dic[roulette]["zero"] += 1
+        print(roulette, roulette_last_numbers_dic[roulette])
+        for line in roulette_current_tables_dic[roulette]:
+            print(line)
 
-    # defining verifying functions (NEEDS CHANGES)
-    def verify_rua(t, i, j):
-        rua = True
-        for x in range(3):
-            if tables[t][x][j] == 0:
-                rua = False
-        return rua
-    
-    def verify_dupla(t, i, j):
-        dupla = False 
-        if i > 0:
-            if tables[t][i-1][j] == 1:
-                dupla = True
-        if j > 0: 
-            if tables[t][i][j-1] == 1:
-                dupla = True
-        if i < 2: 
-            if tables[t][i+1][j] == 1:
-                dupla = True
-        if j < 11: 
-            if tables[t][i][j+1] == 1:
-                dupla = True
-        return dupla
+    #functions for pattern verification
+    def verify_rua(roulette):
+        first = roulette_last_numbers_dic[roulette][0]
+        second = roulette_last_numbers_dic[roulette][1]
+        third = roulette_last_numbers_dic[roulette][2]
+        arr = [number_to_coordinate(first), number_to_coordinate(second), number_to_coordinate(third)]
+        sorted_arr = sorted(arr)
+
+        found = False
+        if sorted_arr[0][0] == sorted_arr[1][0] and sorted_arr[1][0] == sorted_arr[2][0]:
+            if sorted_arr[1][1] == sorted_arr[0][1]+1 and sorted_arr[2][1] == sorted_arr[1][1]+1:
+                found = True
+        return found
+
+    def verify_dupla(roulette):
+        first = roulette_last_numbers_dic[roulette][0]
+        second = roulette_last_numbers_dic[roulette][1]
+        arr = [number_to_coordinate(first), number_to_coordinate(second)]
+        sorted_arr = sorted(arr)
+
+        found = False
+        if sorted_arr[0][0] == sorted_arr[1][0]:
+            if sorted_arr[1][1] == sorted_arr[0][1] + 1:
+                found = True
+        elif sorted_arr[0][1] == sorted_arr[1][1]:
+            if sorted_arr[1][0] == sorted_arr[0][0] + 1:
+                found = True
+        return found
+
+    def verify_canto(roulette):
+        first = roulette_last_numbers_dic[roulette][0]
+        second = roulette_last_numbers_dic[roulette][1]
+        third = roulette_last_numbers_dic[roulette][2]
+        fourth = roulette_last_numbers_dic[roulette][3]
+        arr = [number_to_coordinate(first), number_to_coordinate(second), number_to_coordinate(third), number_to_coordinate(fourth)]
+        sorted_arr = sorted(arr)
+
+        found = True
+        if sorted_arr[1][0] != sorted_arr[0][0] or sorted_arr[1][1]-1 != sorted_arr[0][1]:
+            found = False
+        elif sorted_arr[2][1] != sorted_arr[0][1] or sorted_arr[1][0]-1 != sorted_arr[0][0]:
+            found = False
+        elif sorted_arr[3][1] != sorted_arr[1][1] or sorted_arr[3][0]-1 != sorted_arr[1][0]:
+            found = False
+        return found
+
+    def verify_rua_dupla(roulette):
+        first = roulette_last_numbers_dic[roulette][0]
+        second = roulette_last_numbers_dic[roulette][1]
+        third = roulette_last_numbers_dic[roulette][2]
+        fourth = roulette_last_numbers_dic[roulette][3]
+        fifth = roulette_last_numbers_dic[roulette][4]
+        sixth = roulette_last_numbers_dic[roulette][5]
+        arr = [number_to_coordinate(first), number_to_coordinate(second), number_to_coordinate(third), number_to_coordinate(fourth), number_to_coordinate(fifth), number_to_coordinate(sixth)]
+        sorted_arr = sorted(arr)
+
+        found1 = False
+        if sorted_arr[0][0] == sorted_arr[1][0] and sorted_arr[1][0] == sorted_arr[2][0]:
+            if sorted_arr[1][1] == sorted_arr[0][1]+1 and sorted_arr[2][1] == sorted_arr[1][1]+1:
+                found1 = True
+        found2 = False
+        if sorted_arr[3][0] == sorted_arr[4][0] and sorted_arr[4][0] == sorted_arr[5][0]:
+            if sorted_arr[4][1] == sorted_arr[3][1]+1 and sorted_arr[5][1] == sorted_arr[4][1]+1:
+                found2 = True
+
+        return found1 and found2
 
     # verifying
     while True:
         time.sleep(10)
+        for roulette in roulettes_needed:
+            element_parent_of_numbers = roulette_element_dic[roulette].find_element(By.CLASS_NAME, roulette_class_name)
+            all_roulette_number_elements = [element for element in
+                                            element_parent_of_numbers.find_elements(By.TAG_NAME, "div")]
+            numbers_to_compare = []
+            for i, number_element in enumerate(all_roulette_number_elements):
+                if (i + 1) % 3 != 0:
+                    continue
+                # child_of_child = number_element.find_elements(By.TAG_NAME, "div")[1]
+                if number_element.text == '':
+                    continue
+                numbers_to_compare.append(int(number_element.text))
+            if numbers_to_compare != roulette_last_numbers_dic[roulette]:
+                # new number found
+                for counter in roulette_counting_dic[roulette]:
+                    roulette_counting_dic[roulette][counter] += 1
 
-
-    #try:
-    #    WebDriverWait(driver, 60).until(
-    #        EC.element_to_be_clickable((By.CSS_SELECTOR, "#acrPopover > span.a-declarative > a"))).click()
-    #finally:
-    #    driver.quit()
-    #moreGamesButton = driver.find_element(By.CLASS_NAME, "header__more-games")
-    #moreGamesButton.click()
-
+                new_number = numbers_to_compare[0]
+                old_number = roulette_last_numbers_dic[roulette][len(roulette_last_numbers_dic[roulette]) - 1]
+                # take old number off of mask
+                roulette_current_tables_dic[roulette][2-((old_number-1)%3)][(old_number-1) // 3] = 0
+                roulette_current_tables_dic[roulette][2-((new_number-1)%3)][(new_number-1) // 3] = 1
+                roulette_last_numbers_dic[roulette] = numbers_to_compare
+                #verify for patterns
+                if new_number == 0:
+                    roulette_counting_dic[roulette]["zero"] = 0
+                if verify_rua(roulette):
+                    roulette_counting_dic[roulette]["rua"] = 0
+                if verify_canto(roulette):
+                    roulette_counting_dic[roulette]["canto"] = 0
+                if verify_dupla(roulette):
+                    roulette_counting_dic[roulette]["dupla"] = 0
+                if verify_rua_dupla(roulette):
+                    roulette_counting_dic[roulette]["rua_dupla"] = 0
