@@ -8,17 +8,18 @@ import time
 import re 
 
 if __name__ == '__main__':
-
-    driver = uc.Chrome()
+    options = uc.ChromeOptions()
+    # options.add_argument('--headless')
+    driver = uc.Chrome(options=options)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
     usernameInput = driver.find_element(By.ID, "txtUsername")
-    usernameInput.send_keys("doidodocassino")
+    usernameInput.send_keys("Midopazo")
 
     time.sleep(0.5)
 
     passwordInput = driver.find_element(By.ID, "txtPassword")
-    passwordInput.send_keys("cassino")
+    passwordInput.send_keys("jppedrosaa")
 
     time.sleep(0.5)
 
@@ -198,7 +199,9 @@ if __name__ == '__main__':
 
     # verifying
     while True:
+        print("esperando 10 seg...")
         time.sleep(10)
+        print("verificando...")
         for roulette in roulettes_needed:
             element_parent_of_numbers = roulette_element_dic[roulette].find_element(By.CLASS_NAME, roulette_class_name)
             all_roulette_number_elements = [element for element in
@@ -217,6 +220,7 @@ if __name__ == '__main__':
                     roulette_counting_dic[roulette][counter] += 1
 
                 new_number = numbers_to_compare[0]
+                print(roulette, new_number)
                 old_number = roulette_last_numbers_dic[roulette][len(roulette_last_numbers_dic[roulette]) - 1]
                 # take old number off of mask
                 roulette_current_tables_dic[roulette][2-((old_number-1)%3)][(old_number-1) // 3] = 0
@@ -233,3 +237,4 @@ if __name__ == '__main__':
                     roulette_counting_dic[roulette]["dupla"] = 0
                 if verify_rua_dupla(roulette):
                     roulette_counting_dic[roulette]["rua_dupla"] = 0
+        print("verificou")
