@@ -69,7 +69,6 @@ if __name__ == '__main__':
             roulette_element_dic[element.text] = (element.find_element(By.XPATH, '..')).find_element(By.XPATH, '..')
     roulette_all_numbers_array = [element.find_elements(By.TAG_NAME, "div") for element in driver.find_elements(By.CLASS_NAME, roulette_class_name)]
 
-
     for roulette in roulette_element_dic:
         roulette_counting_dic[roulette] = {
             "rua": 0,
