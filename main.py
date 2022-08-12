@@ -13,6 +13,7 @@ if __name__ == '__main__':
     driver = uc.Chrome(options=options)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
+    # logar
     usernameInput = driver.find_element(By.ID, "txtUsername")
     usernameInput.send_keys("Midopazo")
 
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     inner_frame = driver.find_element(By.ID, 'gamecontent')
     driver.switch_to.frame(inner_frame)
 
-    more_games = driver.find_element(By.CLASS_NAME, "header__more-games")
+    more_games = driver.find_element(By.CLASS_NAME, "more-games-buttonN0Yt8ztSf1nWOgXO5ftu")
     more_games.click()
 
     time.sleep(0.5)
@@ -61,7 +62,6 @@ if __name__ == '__main__':
     roulette_last_numbers_dic = {}
     roulette_current_tables_dic = {}
 
-    roulete_names_array = [element.text for element in driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
     all_roulettes = [element for element in driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
     for element in all_roulettes:
         if element.text in roulettes_needed:
@@ -151,22 +151,16 @@ if __name__ == '__main__':
                 found = True
         return found
 
-    def verify_canto(roulette):
-        first = roulette_last_numbers_dic[roulette][0]
-        second = roulette_last_numbers_dic[roulette][1]
-        third = roulette_last_numbers_dic[roulette][2]
-        fourth = roulette_last_numbers_dic[roulette][3]
-        arr = [number_to_coordinate(first), number_to_coordinate(second), number_to_coordinate(third), number_to_coordinate(fourth)]
-        sorted_arr = sorted(arr)
 
-        found = True
-        if sorted_arr[1][0] != sorted_arr[0][0] or sorted_arr[1][1]-1 != sorted_arr[0][1]:
-            found = False
-        elif sorted_arr[2][1] != sorted_arr[0][1] or sorted_arr[1][0]-1 != sorted_arr[0][0]:
-            found = False
-        elif sorted_arr[3][1] != sorted_arr[1][1] or sorted_arr[3][0]-1 != sorted_arr[1][0]:
-            found = False
-        return found
+    def update_canto(num):
+        linha = -1
+        coluna = -1
+        if num % 3 == 0:
+            linha = 1
+        elif num % 3 == 2:
+            linha = 2
+        else:
+            linha = 3
 
     def verify_rua_dupla(roulette):
         first = roulette_last_numbers_dic[roulette][0]
