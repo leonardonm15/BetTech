@@ -71,7 +71,7 @@ if __name__ == '__main__':
         element_parent_of_numbers = roulette_element_dic[roulette].find_element(By.CLASS_NAME, roulette_class_name)
         all_roulette_number_elements = [element for element in
                                         element_parent_of_numbers.find_elements(By.TAG_NAME, "div")]
-        print(all_roulette_number_elements)
+        print(len([_.text for _ in all_roulette_number_elements]))
         roulette_numbers = []
         # gets child of child of roulette number frame (where its actual number is)
         for i, number_element in enumerate(all_roulette_number_elements):
@@ -81,7 +81,6 @@ if __name__ == '__main__':
             if number_element.text == '':
                 continue
             roulette_numbers.append(int(number_element.text))
-
         new_numbers = update_last_numbers(roulette, roulette_numbers)
         for number in new_numbers:
             pattern_verification(roulette, number)

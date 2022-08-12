@@ -1,5 +1,5 @@
 import json
-data_file = open("../data/data.JSON")
+data_file = open("data/data.JSON")
 data = json.load(data_file)
 
 
@@ -28,6 +28,8 @@ def update_canto(roulette, new_number):
         jj = move[1]
         if is_corner[line+ii][column+jj]:
             data[roulette]["patterns"]["canto"][line+ii][column+jj] = 0
+
+
 
 
 def pattern_verification(roulette, new_number):

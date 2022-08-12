@@ -9,8 +9,8 @@ data = {}
 for roulette in roulettes_needed:
     roulette_obj = {
         "patterns": {
-            "rua": [0 for i in range(12)],
-            "canto": [[0 for i in range(11)] for i in range(2)]
+            "rua": [0 for _ in range(12)],
+            "canto": [[0 for _ in range(11)] for _ in range(2)]
         },
         "numbers": []
     }
@@ -19,5 +19,5 @@ for roulette in roulettes_needed:
 print(data)
 
 with open("data.JSON", "w") as write_file:
-    json.dump(data, write_file)
+    json.dump(data, write_file, indent=4)
 
