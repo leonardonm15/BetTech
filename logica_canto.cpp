@@ -22,7 +22,7 @@ void solve(){
         } else {
             linha = 2;
         }
-        int coluna = (n-1)/3+1;
+            int coluna = (n-1)/3+1;
         cout << linha << ' ' << coluna << endl;
         for(int i = 0; i < 2; i++){
             for(int j = 0; j < 11; j++){
