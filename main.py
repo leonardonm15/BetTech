@@ -1,9 +1,15 @@
+import time
+import re
+import sys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import undetected_chromedriver.v2 as uc
-import time
-import re
+
+sys.path.insert(0, r"SuperBetTech\utilities")
+sys.path.insert(0, r"SuperBetTech\bot_tlg")
+
 from utilities.pattern_verification import pattern_verification
+from utilities.update_last_numbers import update_last_numbers
 
 if __name__ == '__main__':
     options = uc.ChromeOptions()
@@ -27,7 +33,7 @@ if __name__ == '__main__':
     # continueButton = driver.find_element(By.CSS_SELECTOR, ".regulatory-last-login-modal__button")
     # continueButton.click()
 
-    time.sleep(20)
+    time.sleep(30)
 
     # switch to iframe
     # there are nested iframes
@@ -70,8 +76,8 @@ if __name__ == '__main__':
         # initializing roulette_last_numbers_dic
         element_parent_of_numbers = roulette_element_dic[roulette].find_element(By.CLASS_NAME, roulette_class_name)
         all_roulette_number_elements = [element for element in
-                                        element_parent_of_numbers.find_elements(By.TAG_NAME, "div")]
-        print(len([_.text for _ in all_roulette_number_elements]))
+                                       element_parent_of_numbers.find_elements(By.TAG_NAME, "div")]
+        print(f"numero de todas as roletas -> {[element.text for element in all_roulette_number_element]}")
         roulette_numbers = []
         # gets child of child of roulette number frame (where its actual number is)
         for i, number_element in enumerate(all_roulette_number_elements):
