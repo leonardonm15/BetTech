@@ -13,6 +13,8 @@ def update_last_numbers(table_json_number, bad_input):
                 print(bad_input[-c - 1:-c - 3: -1], table_json_number[-i - 1: -i - 3: -1])
                 if bad_input[-c - 1:-c - 4: -1] == table_json_number[-i - 1: -i - 4: -1]: # se o numero de tras for igual tbm ele adiciona os numeros da frente
                     new_numbers = [number for number in bad_input[:-c - 1:-1]]
+                    if new_numbers is []:
+                        new_numbers = None
                     return new_numbers
             c += 1
         i += 1
