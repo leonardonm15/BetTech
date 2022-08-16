@@ -1,6 +1,9 @@
+from typing import Any
+
 import time
 import re
 import sys
+import json
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import undetected_chromedriver.v2 as uc
@@ -10,6 +13,10 @@ sys.path.insert(0, r"SuperBetTech\bot_tlg")
 
 from utilities.pattern_verification import pattern_verification
 from utilities.update_last_numbers import update_last_numbers
+from data import *
+
+data = open('data/data.json')
+info_json = json.load(data)
 
 if __name__ == '__main__':
     options = uc.ChromeOptions()
@@ -61,9 +68,18 @@ if __name__ == '__main__':
     to_search = table_square[1]
     roulette_class_name = re.search('roulette-historyf[^"]*', to_search).group(0).replace(" ", ".")
     # formating '33\n21\n8\n2\n18\n21\nx32\n9\n22\n11' to "33", "21", "x32"
-    number_historic_arrays = [elements.text.replace("x", "-").split("\n") for elements in driver.find_elements(By.CLASS_NAME, roulette_class_name)]
-    number_historic_arrays = [[int(number) if int(number) >= 0 else array.remove(number) for number in array] for array in number_historic_arrays]
-    #quando tem um multiplicador o array vem menor, investigar amanha
+    number_historic_arrays = [elements.text.replace("x", "-").split("\n") for elements in
+                              driver.find_elements(By.CLASS_NAME, roulette_class_name)]
+    number_historic_arrays = [[int(number) for number in array] for array in number_historic_arrays]
+
+    # tira os multiplicadores, tipo x120 ou x37
+    for historico in number_historic_arrays:
+        c = -1
+        for numero in historico:
+            c += 1
+            if numero < 0:
+                print(f'numero popado {historico[c]}')
+                historico.pop(c)
 
     print(f"arrays com historico das roletas {number_historic_arrays}")
 
@@ -71,34 +87,29 @@ if __name__ == '__main__':
     roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
                         "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
                         "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
-    roulette_element_dic = {}
 
-    all_roulettes = [element for element in driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
-    for element in all_roulettes:
-        if element.text in roulettes_needed:
-            # gets parent of parent (whole roulette frame)
-            roulette_element_dic[element.text] = (element.find_element(By.XPATH, '..')).find_element(By.XPATH, '..')
+    all_roulettes_names = [element.text for element in driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
 
-    for roulette in roulette_element_dic:
-        # initializing roulette_last_numbers_dic
-        element_parent_of_numbers = roulette_element_dic[roulette].find_element(By.CLASS_NAME, roulette_class_name)
-        all_roulette_number_elements = [element for element in
-                                       element_parent_of_numbers.find_elements(By.TAG_NAME, "div")]
-        print(f"numero de todas as roletas -> {[element.text for element in all_roulette_number_elements]}")
-        roulette_numbers = []
-        # gets child of child of roulette number frame (where its actual number is)
-        for i, number_element in enumerate(all_roulette_number_elements):
-            if (i + 1) % 3 != 0:
-                continue
-            # child_of_child = number_element.find_elements(By.TAG_NAME, "div")[1]
-            if number_element.text == '':
-                continue
-            roulette_numbers.append(int(number_element.text))
-        new_numbers = update_last_numbers(roulette, roulette_numbers)
-        try:
-            for number in new_numbers:
-                pattern_verification(roulette, number)
-        except:
-            print("-------NAO EXISTEM NUMEROS NOVOS-------")
-        while True:
-            pass
+    print(f"o numero de historicos é {len(number_historic_arrays)} e o numero de nome de roletas é {len(all_roulettes_names)}")
+
+    roulette_historic_match_name = []
+    c = -1
+    for roulette_name in all_roulettes_names:
+        c += 1
+        if roulette_name in roulettes_needed:
+            roulette_historic_match_name.append((roulette_name, number_historic_arrays[c]))
+
+    #roulete é o historico da roleta dentro do json
+    #informações_json[nome_da_table]
+
+    print(roulette_historic_match_name)
+
+    #new_numbers = update_last_numbers(roulette, roulette_numbers)
+
+    try:
+        for number in new_numbers:
+            pattern_verification(roulette, number)
+    except:
+        print("-------NAO EXISTEM NUMEROS NOVOS-------")
+    while True:
+        pass
