@@ -4,6 +4,7 @@ import undetected_chromedriver.v2 as uc
 import time
 import re
 from utilities.pattern_verification import pattern_verification
+from utilities.update_last_numbers import update_last_numbers
 
 if __name__ == '__main__':
     options = uc.ChromeOptions()

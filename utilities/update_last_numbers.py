@@ -7,7 +7,7 @@
 """
 
 
-def get_new_numbers(table_json_number, bad_input):
+def update_last_numbers(table_json_number, bad_input):
     # dado  numeros antigos e 5 novos
     """pega o ultimo numero do velho compara
     com os ultimos dos novos ate achar um igual
