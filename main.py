@@ -1,17 +1,35 @@
+from typing import Any
+
+import time
+import re
+import sys
+import json
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import undetected_chromedriver.v2 as uc
-import time
-import re
+
+sys.path.insert(0, r"SuperBetTech\utilities")
+sys.path.insert(0, r"SuperBetTech\bot_tlg")
+
 from utilities.pattern_verification import pattern_verification
 from utilities.update_last_numbers import update_last_numbers
+from data import *
+
+data = open('data/data.json')
+info_json = json.load(data)
+
+options = uc.ChromeOptions()
+# options.add_argument('--headless')
+driver = uc.Chrome(options=options)
+driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
+
+
+roulette_historic_match_name = []
+roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
+                    "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
+                    "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
 
 if __name__ == '__main__':
-    options = uc.ChromeOptions()
-    # options.add_argument('--headless')
-    driver = uc.Chrome(options=options)
-    driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
-
     # logar
     usernameInput = driver.find_element(By.ID, "txtUsername")
     usernameInput.send_keys("Midopazo")
@@ -25,63 +43,66 @@ if __name__ == '__main__':
 
     passwordInput.send_keys(Keys.RETURN)
 
-    # continueButton = driver.find_element(By.CSS_SELECTOR, ".regulatory-last-login-modal__button")
-    # continueButton.click()
+    time.sleep(30)
 
-    time.sleep(20)
-
-    # switch to iframe
-    # there are nested iframes
-
+    # switch to iframes
     outer_frame = driver.find_element(By.CLASS_NAME, 'inline-games-page-component__game-frame ')
     driver.switch_to.frame(outer_frame)
 
     inner_frame = driver.find_element(By.ID, 'gamecontent')
     driver.switch_to.frame(inner_frame)
 
+    #click more frames
     more_games = driver.find_element(By.CLASS_NAME, "more-games-buttonN0Yt8ztSf1nWOgXO5ftu")
     more_games.click()
 
     time.sleep(0.5)
 
+    #click multiple roletes
     multiple_rouletes = driver.find_element(By.CLASS_NAME, "lobby-category-item__icon_svg")
     multiple_rouletes.click()
 
     time.sleep(3)
 
-    # getting roulette class name
+    # getting roulette class name, find the elements and assemble the historic array
+    # '33\n21\n8\n2\n18\n21\n32\n9\n22\n11' <- the way that the historic comes out of the html
     table_square = [element.get_attribute("innerHTML") for element in
                     driver.find_elements(By.CLASS_NAME, "lobby-tables__item")]
     to_search = table_square[1]
     roulette_class_name = re.search('roulette-historyf[^"]*', to_search).group(0).replace(" ", ".")
+    # formating '33\n21\n8\n2\n18\n21\nx32\n9\n22\n11' to "33", "21", "x32"
+    number_historic_arrays = [elements.text.replace("x", "-").split("\n") for elements in
+                              driver.find_elements(By.CLASS_NAME, roulette_class_name)]
+    number_historic_arrays = [[int(number) for number in array] for array in number_historic_arrays]
 
-    # to-do: verify if these are the actual numbers of needed roulettes
-    roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
-                        "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
-                        "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
-    roulette_element_dic = {}
+    # get the multipliers out, like x120 or x37
+    for historico in number_historic_arrays:
+        c = -1
+        for numero in historico:
+            c += 1
+            if numero < 0:
+                print(f'numero popado {historico[c]}')
+                historico.pop(c)
 
-    all_roulettes = [element for element in driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
-    for element in all_roulettes:
-        if element.text in roulettes_needed:
-            # gets parent of parent (whole roulette frame)
-            roulette_element_dic[element.text] = (element.find_element(By.XPATH, '..')).find_element(By.XPATH, '..')
+    print(f"arrays com historico das roletas {number_historic_arrays}")
 
-    for roulette in roulette_element_dic:
-        # initializing roulette_last_numbers_dic
-        element_parent_of_numbers = roulette_element_dic[roulette].find_element(By.CLASS_NAME, roulette_class_name)
-        all_roulette_number_elements = [element for element in
-                                        element_parent_of_numbers.find_elements(By.TAG_NAME, "div")]
-        print(len([_.text for _ in all_roulette_number_elements]))
-        roulette_numbers = []
-        # gets child of child of roulette number frame (where its actual number is)
-        for i, number_element in enumerate(all_roulette_number_elements):
-            if (i + 1) % 3 != 0:
-                continue
-            # child_of_child = number_element.find_elements(By.TAG_NAME, "div")[1]
-            if number_element.text == '':
-                continue
-            roulette_numbers.append(int(number_element.text))
-        new_numbers = update_last_numbers(roulette, roulette_numbers)
+    all_roulettes_names = [element.text for element in driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
+
+    print(f"o numero de historicos é {len(number_historic_arrays)} e o numero de nome de roletas é {len(all_roulettes_names)}")
+
+    c = -1
+    for roulette_name in all_roulettes_names:
+        c += 1
+        if roulette_name in roulettes_needed:
+            roulette_historic_match_name.append((roulette_name, number_historic_arrays[c]))
+
+    for group in roulette_historic_match_name:
+        # group comes like that -. ("roulette name", [extracted numbers])
+        new_numbers = update_last_numbers(info_json[group[0]], group[1])
         for number in new_numbers:
-            pattern_verification(roulette, number)
+            pattern_verification(info_json[group[0], group[1]])
+
+        #to-do quando o historico estiver vazio preencher ele com os numeros que vierem do rolette historic match
+
+    while True:
+        pass
