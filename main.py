@@ -18,18 +18,18 @@ from data import *
 data = open('data/data.json')
 info_json = json.load(data)
 
-options = uc.ChromeOptions()
-# options.add_argument('--headless')
-driver = uc.Chrome(options=options)
-driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
-
-
 roulette_historic_match_name = []
 roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
                     "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
                     "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
 
 if __name__ == '__main__':
+
+    options = uc.ChromeOptions()
+    # options.add_argument('--headless')
+    driver = uc.Chrome(options=options)
+    driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
+
     # logar
     usernameInput = driver.find_element(By.ID, "txtUsername")
     usernameInput.send_keys("Midopazo")
@@ -96,11 +96,29 @@ if __name__ == '__main__':
         if roulette_name in roulettes_needed:
             roulette_historic_match_name.append((roulette_name, number_historic_arrays[c]))
 
+    #verificação de padrões junto com reconhecimento de novos numeros
     for group in roulette_historic_match_name:
         # group comes like that -. ("roulette name", [extracted numbers])
-        new_numbers = update_last_numbers(info_json[group[0]], group[1])
+        new_numbers = update_last_numbers(info_json[group[0]]['numbers'], group[1])
         for number in new_numbers:
             pattern_verification(info_json[group[0], group[1]])
+
+    c = 0
+    for roleta in info_json:
+        for pattern in roleta['patterns']:
+            for numero in pattern:
+                print(pattern)
+                if pattern == 'canto':
+                    #caso canto
+                    for numero in canto:
+                        if numero == 35: #nao sei qual o numero de alerta de canto
+                            #bot telegram
+                            pass
+                    continue
+                if numero == 35 and pattern == 'rua':
+                    pass
+
+
 
         #to-do quando o historico estiver vazio preencher ele com os numeros que vierem do rolette historic match
 
