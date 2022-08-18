@@ -8,8 +8,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import undetected_chromedriver.v2 as uc
 
-sys.path.insert(0, r"SuperBetTech\utilities")
-sys.path.insert(0, r"SuperBetTech\bot_tlg")
+# sys.path.insert(0, r"SuperBetTech\utilities")
+# sys.path.insert(0, r"SuperBetTech\bot_tlg")
 
 from utilities.pattern_verification import pattern_verification
 from utilities.update_last_numbers import update_last_numbers
@@ -17,6 +17,7 @@ from data import *
 
 data = open('data/data.json')
 info_json = json.load(data)
+
 
 roulette_historic_match_name = []
 roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
@@ -31,17 +32,23 @@ if __name__ == '__main__':
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
     # logar
-    usernameInput = driver.find_element(By.ID, "txtUsername")
-    usernameInput.send_keys("Midopazo")
+    # usernameInput = driver.find_element(By.ID, "txtUsername")
+    # usernameInput.send_keys("Midopazo")
+    data = open('data/data.json')
+    info_json = json.load(data)
+    data.close()
 
-    time.sleep(0.5)
+    cookies_data = open("./data/cookies.JSON")
+    cookies = json.load(cookies_data)
 
-    passwordInput = driver.find_element(By.ID, "txtPassword")
-    passwordInput.send_keys("jppedrosaa")
-
-    time.sleep(0.5)
-
-    passwordInput.send_keys(Keys.RETURN)
+    options = uc.ChromeOptions()
+    # options.add_argument('--headless')
+    driver = uc.Chrome(options=options, cookies=cookies)
+    driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
+    for cookie in cookies:
+        print(cookie, cookies[cookie])
+        driver.add_cookie({"name": cookie, "value": cookies[cookie]})
+    driver.refresh()
 
     time.sleep(30)
 
