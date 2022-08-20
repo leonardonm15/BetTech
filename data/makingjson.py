@@ -18,7 +18,7 @@ for roulette in roulettes_needed:
                 "down": [[0 for _ in range(12)] for _ in range(2)]
             }
         },
-        "numbers": []
+        "numbers": [-1 for _ in range(10)]
     }
     data[roulette] = roulette_obj
 

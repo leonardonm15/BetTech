@@ -8,7 +8,6 @@ cookies = {}
 
 if __name__ == '__main__':
     options = uc.ChromeOptions()
-    # options.add_argument('--headless')
     driver = uc.Chrome(options=options)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
@@ -30,5 +29,3 @@ if __name__ == '__main__':
         json.dump(cookies, wf)
 
     print(cookies)
-    while True:
-        pass

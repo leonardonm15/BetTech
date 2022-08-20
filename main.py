@@ -27,7 +27,6 @@ roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Ro
 if __name__ == '__main__':
 
     options = uc.ChromeOptions()
-    # options.add_argument('--headless')
     driver = uc.Chrome(options=options)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
@@ -42,7 +41,6 @@ if __name__ == '__main__':
     cookies = json.load(cookies_data)
 
     options = uc.ChromeOptions()
-    # options.add_argument('--headless')
     driver = uc.Chrome(options=options, cookies=cookies)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
     for cookie in cookies:
@@ -106,26 +104,50 @@ if __name__ == '__main__':
     #verificação de padrões junto com reconhecimento de novos numeros
     for group in roulette_historic_match_name:
         # group comes like that -. ("roulette name", [extracted numbers])
+        print("info_json[group[0]]['numbers']: ", info_json[group[0]]['numbers'])
+        print("group[1]: ", group[1])
         new_numbers = update_last_numbers(info_json[group[0]]['numbers'], group[1])
         for number in new_numbers:
-            pattern_verification(info_json[group[0], group[1]])
+            pattern_verification(group[0], number)
 
     c = 0
-    for roleta in info_json:
-        for pattern in roleta['patterns']:
-            for numero in pattern:
-                print(pattern)
-                if pattern == 'canto':
-                    #caso canto
-                    for numero in canto:
-                        if numero == 35: #nao sei qual o numero de alerta de canto
-                            #bot telegram
-                            pass
-                    continue
-                if numero == 35 and pattern == 'rua':
-                    pass
 
+    for roulette in info_json:
+        # verificar canto
+        arr_canto = info_json[roulette]["patterns"]["canto"]
+        for num in arr_canto:
+            if num == 23:
+                pass
+                #telegram avisa canto
 
+        # verificar rua
+        arr_rua = info_json[roulette]["patterns"]["rua"]
+        for num in arr_rua:
+            if num == 35:
+                pass
+                #telegram avisa rua
+
+        arr_rua_dupla = info_json[roulette]["patterns"]["rua_dupla"]
+        for num in arr_rua_dupla:
+            if num == 20:
+                pass
+                #telegram avisa rua dupla
+
+        arr_direta = info_json[roulette]["patterns"]["direta"]
+        for num in arr_direta:
+            if num == 128:
+                pass
+                #telegram avisa direta
+
+        #verificacao "agrupamento do zero"
+        avisar = True
+        agrupamento_zero = [12, 35, 3, 26, 0, 32, 15]
+        for num in agrupamento_zero:
+            if arr_direta[num] < 15:
+                avisar = False
+        if avisar:
+            pass
+            #telegram avisa "agrupamento do zero"
 
         #to-do quando o historico estiver vazio preencher ele com os numeros que vierem do rolette historic match
 

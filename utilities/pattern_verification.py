@@ -62,10 +62,11 @@ def update_dupla(roulette, new_number):
         data[roulette]["patterns"]["dupla"]["right"][line][column] = 0
 
 
-
 def pattern_verification(roulette, new_number):
-    for pattern in data[roulette]:
+    for pattern in data[roulette]["patterns"]:
         for num in data[roulette]["patterns"][pattern]:
+            print(data[roulette]["patterns"][pattern])
+            print(num)
             num += 1
 
     update_rua(roulette, new_number)
