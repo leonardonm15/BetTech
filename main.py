@@ -15,27 +15,14 @@ from utilities.pattern_verification import pattern_verification
 from utilities.update_last_numbers import update_last_numbers
 from data import *
 
-data = open('data/data.json')
-info_json = json.load(data)
-
-
 roulette_historic_match_name = []
 roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
                     "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
                     "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
 
 if __name__ == '__main__':
-
-    options = uc.ChromeOptions()
-    driver = uc.Chrome(options=options)
-    driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
-
-    # logar
-    # usernameInput = driver.find_element(By.ID, "txtUsername")
-    # usernameInput.send_keys("Midopazo")
     data = open('data/data.json')
     info_json = json.load(data)
-    data.close()
 
     cookies_data = open("./data/cookies.JSON")
     cookies = json.load(cookies_data)
@@ -107,9 +94,29 @@ if __name__ == '__main__':
         print("info_json[group[0]]['numbers']: ", info_json[group[0]]['numbers'])
         print("group[1]: ", group[1])
         new_numbers = update_last_numbers(info_json[group[0]]['numbers'], group[1])
-        for number in new_numbers:
-            pattern_verification(group[0], number)
 
+        print(new_numbers)
+        roulette = group[0]
+        for pattern in info_json[roulette]["patterns"]:
+            if pattern == "canto":
+                for arr in info_json[roulette]["patterns"][pattern]:
+                    for i in range(len(arr)):
+                        arr[i] += len(new_numbers)
+            elif pattern == "dupla":
+                for direction in info_json[roulette]["patterns"][pattern]:
+                    for arr in info_json[roulette]["patterns"][pattern][direction]:
+                        for i in range(len(arr)):
+                            arr[i] += len(new_numbers)
+            else:
+                for i in range(len(info_json[roulette]["patterns"][pattern])):
+                    info_json[roulette]["patterns"][pattern][i] += len(new_numbers)
+
+        for number in new_numbers:
+            pattern_verification(group[0], number, info_json)
+        info_json[group[0]]['numbers'] = group[1]
+
+    with open("./data/data.json", "w") as write_file:
+        json.dump(info_json, write_file, indent=4)
     c = 0
 
     for roulette in info_json:

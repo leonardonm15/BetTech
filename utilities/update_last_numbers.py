@@ -1,3 +1,4 @@
+
 def update_last_numbers(old_table, new_table):
     # dado  numeros antigos e 5 novos
     """pega o ultimo numero do velho compara
@@ -51,4 +52,6 @@ def update_last_numbers(old_table, new_table):
     else:
         for i in range(beginning_of_old):
             new_numbers.append(new_table[i])
+
     return new_numbers
+
