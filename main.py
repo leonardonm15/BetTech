@@ -1,24 +1,61 @@
-from typing import Any
-
 import time
+import telegram
+import dotenv
+import os
 import re
 import sys
 import json
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 import undetected_chromedriver.v2 as uc
-
 # sys.path.insert(0, r"SuperBetTech\utilities")
 # sys.path.insert(0, r"SuperBetTech\bot_tlg")
-
 from utilities.pattern_verification import pattern_verification
 from utilities.update_last_numbers import update_last_numbers
-from data import *
+
+# telegram
+dotenv.load_dotenv()
+token_tlg = os.getenv("TOKEN_TLG")
+print(token_tlg)
+chat_id = os.getenv("CHAT_ID")
+bot = telegram.Bot(token_tlg)
+
+def alerta_rua(index_rua, qnt_rodadas, roulette):
+    num1 = index_rua*3 + 1
+    num2 = num1 + 1
+    num3 = num2 + 1
+    bot.send_message("-738340800", f"A RUA DOS NÚMEROS {num1}, {num2} e {num3} NÃO OCORRE HÁ {qnt_rodadas} RODADAS NA ROLETA {roulette}")
+
+def alerta_rua_dupla(index_rua_dupla, rodadas, roulette):
+    num1 = index_rua_dupla*3 + 1
+    num2 = num1 + 5
+    bot.send_message("-738340800", f"A RUA DUPLA DOS NÚMEROS {num1} A {num2} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}")
+
+def alerta_canto(canto_i, canto_j, rodadas, roulette):
+    num1 = canto_j*3 + (3 - canto_i) - 1
+    num2 = num1 + 1
+    num3 = num1 + 3
+    num4 = num2 + 3
+    bot.send_message("-738340800", f"O CANTO DOS NÚMEROS {num1}, {num2}, {num3} E {num4} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}")
+
+def alerta_direta(num, rodadas, roulette):
+    bot.send_message("-738340800", f"O NÚMERO {num} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}")
+
+def alerta_dupla(dupla_i, dupla_j, direction, rodadas, roulette):
+    num1 = dupla_i*3 + dupla_j
+    if direction == "right":
+        num2 = num1 + 3
+    else:
+        num2 = num1 + 1
+    bot.send_message("-738340800", f"A DUPLA DOS NÚMEROS {num1} E {num2} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}")
+
+
+
 
 roulette_historic_match_name = []
-roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
-                    "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
-                    "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
+#roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
+#                    "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
+#                    "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
+roulettes_needed = ["Roulette"]
 
 if __name__ == '__main__':
     data = open('data/data.json')
@@ -63,6 +100,11 @@ if __name__ == '__main__':
     to_search = table_square[1]
     roulette_class_name = re.search('roulette-historyf[^"]*', to_search).group(0).replace(" ", ".")
     # formating '33\n21\n8\n2\n18\n21\nx32\n9\n22\n11' to "33", "21", "x32"
+
+    #while True:
+    data = open('data/data.json')
+    info_json = json.load(data)
+
     number_historic_arrays = [elements.text.replace("x", "-").split("\n") for elements in
                               driver.find_elements(By.CLASS_NAME, roulette_class_name)]
     number_historic_arrays = [[int(number) for number in array] for array in number_historic_arrays]
@@ -91,6 +133,7 @@ if __name__ == '__main__':
     #verificação de padrões junto com reconhecimento de novos numeros
     for group in roulette_historic_match_name:
         # group comes like that -. ("roulette name", [extracted numbers])
+        print("roulette: ", group[0])
         print("info_json[group[0]]['numbers']: ", info_json[group[0]]['numbers'])
         print("group[1]: ", group[1])
         new_numbers = update_last_numbers(info_json[group[0]]['numbers'], group[1])
@@ -115,48 +158,91 @@ if __name__ == '__main__':
             pattern_verification(group[0], number, info_json)
         info_json[group[0]]['numbers'] = group[1]
 
-    with open("./data/data.json", "w") as write_file:
-        json.dump(info_json, write_file, indent=4)
-    c = 0
 
     for roulette in info_json:
+        # verificar dupla
+        matriz_dupla_aviso_right = info_json[roulette]["avisos"]["dupla"]["right"]
+        matriz_dupla_right = info_json[roulette]["patterns"]["dupla"]["right"]
+        for i, arr_dupla_right in enumerate(matriz_dupla_right):
+            for j, num_dupla_right in enumerate(arr_dupla_right):
+                if num_dupla_right >= 64:
+                    if not matriz_dupla_aviso_right[i][j]:
+                        alerta_dupla(i, j, "right", num_dupla_right, roulette)
+                        matriz_dupla_aviso_right[i][j] = 1
+                else:
+                    matriz_dupla_aviso_right[i][j] = 0
+        matriz_dupla_aviso_down = info_json[roulette]["avisos"]["dupla"]["down"]
+        matriz_dupla_down = info_json[roulette]["patterns"]["dupla"]["down"]
+        for i, arr_dupla_down in enumerate(matriz_dupla_down):
+            for j, num_dupla_down in enumerate(arr_dupla_down):
+                if num_dupla_down >= 64:
+                    if not matriz_dupla_aviso_down[i][j]:
+                        alerta_dupla(i, j, "down", num_dupla_down, roulette)
+                        matriz_dupla_aviso_down[i][j] = 1
+                else:
+                    matriz_dupla_aviso_down[i][j] = 0
+
+
         # verificar canto
-        arr_canto = info_json[roulette]["patterns"]["canto"]
-        for num in arr_canto:
-            if num == 23:
-                pass
-                #telegram avisa canto
+        matriz_canto_aviso = info_json[roulette]["avisos"]["canto"]
+        matriz_canto = info_json[roulette]["patterns"]["canto"]
+        for i, arr_canto in enumerate(matriz_canto):
+            for j, num in enumerate(arr_canto):
+                if num >= 35:
+                    if not matriz_canto_aviso[i][j]:
+                        alerta_canto(i, j, num, roulette)
+                        matriz_canto_aviso[i][j] = 1
+                else:
+                    matriz_canto_aviso[i][j] = 0
 
         # verificar rua
+        arr_rua_aviso = info_json[roulette]["avisos"]["rua"]
         arr_rua = info_json[roulette]["patterns"]["rua"]
-        for num in arr_rua:
-            if num == 35:
-                pass
-                #telegram avisa rua
+        for i, num in enumerate(arr_rua):
+            if num >= 35:
+                if not arr_rua_aviso[i]:
+                    alerta_rua(i, num, roulette)
+                    arr_rua_aviso[i] = 1
+            else:
+                arr_rua_aviso[i] = 0
 
+        # verificar rua dupla
+        arr_rua_dupla_aviso = info_json[roulette]["avisos"]["rua_dupla"]
         arr_rua_dupla = info_json[roulette]["patterns"]["rua_dupla"]
-        for num in arr_rua_dupla:
-            if num == 20:
-                pass
-                #telegram avisa rua dupla
+        for i, num in enumerate(arr_rua_dupla):
+            if num >= 20:
+                if not arr_rua_dupla_aviso[i]:
+                    alerta_rua_dupla(i, num, roulette)
+                    arr_rua_dupla_aviso[i] = 1
+            else:
+                arr_rua_dupla_aviso[i] = 0
 
+        # verificar direta
+        arr_direta_aviso = info_json[roulette]["avisos"]["direta"]
         arr_direta = info_json[roulette]["patterns"]["direta"]
-        for num in arr_direta:
-            if num == 128:
-                pass
-                #telegram avisa direta
+        for i, num in enumerate(arr_direta):
+            if num >= 128:
+                if not arr_direta_aviso[i]:
+                    alerta_direta(i, num, roulette)
+                    arr_direta_aviso[i] = 1
+            else:
+                arr_direta_aviso[i] = 0
 
         #verificacao "agrupamento do zero"
         avisar = True
         agrupamento_zero = [12, 35, 3, 26, 0, 32, 15]
+        menor_num = 10000000
         for num in agrupamento_zero:
+            menor_num = min(arr_direta[num], menor_num)
             if arr_direta[num] < 15:
                 avisar = False
         if avisar:
-            pass
-            #telegram avisa "agrupamento do zero"
+            bot.send_message("-738340800", f"AGRUPAMENTO DO ZERO (12, 35, 3, 26, 0, 32, 15) NÃO OCORRE HÁ {menor_num} RODADAS NA ROLETA {roulette}")
 
-        #to-do quando o historico estiver vazio preencher ele com os numeros que vierem do rolette historic match
 
-    while True:
-        pass
+    print(info_json)
+    with open("./data/data.json", "w") as write_file:
+        json.dump(info_json, write_file, indent=4)
+    c = 0
+
+        #time.sleep(40)

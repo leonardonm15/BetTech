@@ -27,6 +27,9 @@ def update_canto(roulette, new_number, data):
     else:
         line = 2
     column = (new_number - 1) // 3
+    print("new_number: ", new_number)
+    print("line: ", line)
+    print("column: ", column)
     for move in moves:
         ii = move[0]
         jj = move[1]
@@ -67,3 +70,4 @@ def pattern_verification(roulette, new_number, data):
     update_direta(roulette, new_number, data)
     uptade_rua_dupla(roulette, new_number, data)
     update_canto(roulette, new_number, data)
+    update_dupla(roulette, new_number, data)

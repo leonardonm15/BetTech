@@ -25,7 +25,7 @@ if __name__ == '__main__':
     for cookie in cookies_array:
         cookies[cookie['name']] = cookie['value']
 
-    with open('../data/cookies.JSON', 'w') as wf:
+    with open('data/cookies.JSON', 'w') as wf:
         json.dump(cookies, wf)
 
     print(cookies)
