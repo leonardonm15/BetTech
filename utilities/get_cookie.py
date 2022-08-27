@@ -4,9 +4,9 @@ import undetected_chromedriver.v2 as uc
 import time
 import json
 
-cookies = {}
 
 if __name__ == '__main__':
+    cookies = {}
     options = uc.ChromeOptions()
     driver = uc.Chrome(options=options)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     for cookie in cookies_array:
         cookies[cookie['name']] = cookie['value']
 
-    with open('data/cookies.JSON', 'w') as wf:
+    with open('/data/cookies.JSON', 'w') as wf:
         json.dump(cookies, wf)
 
     print(cookies)
