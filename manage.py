@@ -1,19 +1,18 @@
 import os
 import time
-
+from main import main_procedure
+from utilities.get_cookie import get_cookies
 """roda main.py a cada 40+ segundos. E a cada hora renova cookies rodando get_cookie.py"""
 
 count = 0
-os.system("python3 ./data/makingjson.py")
-#os.system("python3 ./utilities/get_cookie.py")
-print("hello")
 while True:
     count += 40
     if count >= 60*60:
-        os.system("python3 ./utilities/get_cookie.py")
+        get_cookies()
         time.sleep(60)
-        os.system("python3 main.py")
+        main_procedure()
         count = 0
     else:
-        time.sleep(40)
-        os.system("python3 main.py")
+        main_procedure()
+        time.sleep(60)
+
