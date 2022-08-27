@@ -5,7 +5,7 @@ import time
 
 count = 0
 os.system("python3 ./data/makingjson.py")
-#os.system("python3 ./utilities/get_cookie.py")
+os.system("python3 ./utilities/get_cookie.py")
 print("hello")
 while True:
     count += 40
