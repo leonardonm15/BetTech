@@ -6,12 +6,10 @@ def update_rua(roulette, new_number, data):
 
 def uptade_rua_dupla(roulette, new_number, data):
     index = (new_number-1)//3
+    print(index)
     if index > 0:
         data[roulette]["patterns"]["rua_dupla"][index-1] = 0
-
-    if index < 10:
-        data[roulette]["patterns"]["rua_dupla"][index+1] = 0
-
+    data[roulette]["patterns"]["rua_dupla"][index] = 0
 
 def update_canto(roulette, new_number, data):
     is_corner = [
@@ -27,9 +25,6 @@ def update_canto(roulette, new_number, data):
     else:
         line = 2
     column = (new_number - 1) // 3
-    print("new_number: ", new_number)
-    print("line: ", line)
-    print("column: ", column)
     for move in moves:
         ii = move[0]
         jj = move[1]
@@ -64,7 +59,6 @@ def update_dupla(roulette, new_number, data):
 
 
 def pattern_verification(roulette, new_number, data):
-
     update_rua(roulette, new_number, data)
     update_canto(roulette, new_number, data)
     update_direta(roulette, new_number, data)

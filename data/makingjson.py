@@ -32,6 +32,6 @@ for roulette in roulettes_needed:
     }
     data[roulette] = roulette_obj
 
-with open("data.json", "w") as write_file:
+with open("data/data.json", "w") as write_file:
     json.dump(data, write_file, indent=4)
 

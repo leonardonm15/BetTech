@@ -15,7 +15,6 @@ if platform.system() == 'Windows':
     makingjson_path = current_path + makingjson_path
 
 os.system(f'python3 {makingjson_path}')
-
 count = 0
 while True:
     count += 40
@@ -27,4 +26,3 @@ while True:
     else:
         time.sleep(40)
         os.system(f'python3 {main_path}')
-

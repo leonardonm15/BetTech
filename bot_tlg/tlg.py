@@ -1,6 +1,7 @@
 import telegram
 import dotenv
 import os
+from BetTech.utilities.conversions import *
 
 dotenv.load_dotenv()
 
@@ -36,8 +37,8 @@ class BotTlg:
     def alerta_direta(self, num, rodadas, roulette, ultimo_numero):
         self.mensagem += f"O NÚMERO {num} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 30 TENTATIVAS\n"
 
-    def alerta_dupla(self, dupla_i, dupla_j, direction, rodadas, roulette, ultimo_numero):
-        num1 = dupla_i * 3 + dupla_j
+    def alerta_dupla(self, dupla_i, dupla_j, direction, rodadas, roulette):
+        num1 = convert_direta_pos_to_num(dupla_i, dupla_j)
         if direction == "right":
             num2 = num1 + 3
         else:
