@@ -12,6 +12,7 @@ import undetected_chromedriver.v2 as uc
 from utilities.pattern_verification import pattern_verification
 from utilities.update_last_numbers import update_last_numbers
 from bot_tlg import tlg
+from utilities.conversions import *
 
 roulette_historic_match_name = []
 bot_tlg = tlg.BotTlg()
@@ -33,7 +34,6 @@ if __name__ == '__main__':
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
     for cookie in cookies:
-        print(cookie, cookies[cookie])
         driver.add_cookie({"name": cookie, "value": cookies[cookie]})
     driver.refresh()
 
@@ -80,14 +80,14 @@ if __name__ == '__main__':
         for numero in historico:
             c += 1
             if numero < 0:
-                print(f'numero popado {historico[c]}')
+                #print(f'numero popado {historico[c]}')
                 historico.pop(c)
 
-    print(f"arrays com historico das roletas {number_historic_arrays}")
+    #print(f"arrays com historico das roletas {number_historic_arrays}")
 
     all_roulettes_names = [element.text for element in driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
 
-    print(f"o numero de historicos é {len(number_historic_arrays)} e o numero de nome de roletas é {len(all_roulettes_names)}")
+    #print(f"o numero de historicos é {len(number_historic_arrays)} e o numero de nome de roletas é {len(all_roulettes_names)}")
 
     c = -1
     for roulette_name in all_roulettes_names:
@@ -102,28 +102,58 @@ if __name__ == '__main__':
         #print("group[1]: ", group[1])
         new_numbers = update_last_numbers(info_json[group[0]]['numbers'], group[1])
 
+        for number in new_numbers:
+            pattern_verification(group[0], number, info_json)
+        info_json[group[0]]['numbers'] = group[1]
         #print(new_numbers)
         roulette = group[0]
         for pattern in info_json[roulette]["patterns"]:
             if pattern == "canto":
-                for arr in info_json[roulette]["patterns"][pattern]:
-                    for i in range(len(arr)):
-                        arr[i] += len(new_numbers)
+                verify = [[0 for _ in range(11)] for _ in range(2)]
+                for i, arr in enumerate(info_json[roulette]["patterns"][pattern]):
+                    for j in range(len(arr)):
+                        nums = convert_canto_pos_to_nums(i, j)
+                        find_num = next((h for h, x in enumerate(new_numbers) if x == nums[0] or x == nums[1] or x == nums[2] or x == nums[3]), -1)
+                        if find_num == -1:
+                            arr[j] += len(new_numbers)
+                        else:
+                            arr[j] += find_num
             elif pattern == "dupla":
                 for direction in info_json[roulette]["patterns"][pattern]:
-                    for arr in info_json[roulette]["patterns"][pattern][direction]:
-                        for i in range(len(arr)):
-                            arr[i] += len(new_numbers)
-            else:
-                print("pattern: ", pattern)
-                print("info_json[roulette]['patterns'][pattern]: ", info_json[roulette]["patterns"][pattern])
-                print("len(new_numbers: ", len(new_numbers))
+                    for i, arr in enumerate(info_json[roulette]["patterns"][pattern][direction]):
+                        for j in range(len(arr)):
+                            num = convert_direta_pos_to_num(i, j)
+                            if direction == 'right':
+                                num2 = num + 3
+                            else:
+                                num2 = num + 1
+                            find_num = next((h for h, x in enumerate(new_numbers) if x == num or x == num2), -1)
+                            if find_num == -1:
+                                arr[j] += len(new_numbers)
+                            else:
+                                arr[j] += find_num
+            elif pattern == "direta":
                 for i in range(len(info_json[roulette]["patterns"][pattern])):
-                    info_json[roulette]["patterns"][pattern][i] += len(new_numbers)
+                    find_num = next((j for j, x in enumerate(new_numbers) if x == i), -1)
+                    if find_num == -1:
+                        info_json[roulette]["patterns"][pattern][i] += len(new_numbers)
+                    else:
+                        info_json[roulette]["patterns"][pattern][i] += find_num
+            elif pattern == "rua":
+                for i in range(len(info_json[roulette]["patterns"][pattern])):
+                    find_num = next((j for j, x in enumerate(new_numbers) if i*3 + 3 >= x >= i*3 + 1), -1)
+                    if find_num == -1:
+                        info_json[roulette]["patterns"][pattern][i] += len(new_numbers)
+                    else:
+                        info_json[roulette]["patterns"][pattern][i] += find_num
+            elif pattern == "rua_dupla":
+                for i in range(len(info_json[roulette]["patterns"][pattern])):
+                    find_num = next((j for j, x in enumerate(new_numbers) if i*3 + 6 >= x >= i*3 + 1), -1)
+                    if find_num == -1:
+                        info_json[roulette]["patterns"][pattern][i] += len(new_numbers)
+                    else:
+                        info_json[roulette]["patterns"][pattern][i] += find_num
 
-        for number in new_numbers:
-            pattern_verification(group[0], number, info_json)
-        info_json[group[0]]['numbers'] = group[1]
 
 
     for roulette in info_json:
@@ -208,7 +238,7 @@ if __name__ == '__main__':
 
     print(bot_tlg.mensagem)
 
-    print(info_json)
+    #print(info_json)
     with open("./data/data.json", "w") as write_file:
         json.dump(info_json, write_file, indent=4)
     c = 0

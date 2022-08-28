@@ -5,7 +5,6 @@ def update_rua(roulette, new_number, data):
 
 
 def uptade_rua_dupla(roulette, new_number, data):
-    print(roulette, new_number)
     index = (new_number-1)//3
     if index > 0:
         data[roulette]["patterns"]["rua_dupla"][index-1] = 0
