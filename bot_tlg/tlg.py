@@ -1,6 +1,7 @@
 import telegram
 import dotenv
 import os
+from ..utilities.conversions import *
 
 dotenv.load_dotenv()
 
@@ -37,7 +38,7 @@ class BotTlg:
         self.mensagem += f"O NÚMERO {num} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}\n"
 
     def alerta_dupla(self, dupla_i, dupla_j, direction, rodadas, roulette):
-        num1 = dupla_i * 3 + dupla_j
+        num1 = convert_direta_pos_to_num(dupla_i, dupla_j)
         if direction == "right":
             num2 = num1 + 3
         else:
