@@ -1,25 +1,30 @@
 import os
 import time
-from main import main_procedure
-import os
-import time
+import pathlib
+import platform
 
-"""roda main.py a cada 40+ segundos. E a cada hora renova cookies rodando get_cookie.py"""
+current_path = str(pathlib.Path().resolve()) + "/"
+print(current_path)
+makingjson_path = 'data/makingjson.py'
+cookie_path = 'utilities/get_cookie.py'
+main_path = 'main.py'
+if platform.system() == 'Windows':
+    current_path = str(pathlib.Path().resolve())
+    cookie_path = current_path + cookie_path
+    main_path = current_path + main_path
+    makingjson_path = current_path + makingjson_path
+
+os.system(f'python3 {makingjson_path}')
 
 count = 0
-get_cookie_path = pathlib.Path().resolve("C:\Users\Leona\PycharmProjects\SuperBetTech\utilities\get_cookie.py")
-get_main_path = pathlib.Path().resolve("C:\Users\Leona\PycharmProjects\SuperBetTech\main.py")
-#os.system("./data/makingjson.py")
-#os.system("./utilities/get_cookie.py")
-print("hello")
 while True:
     count += 40
     if count >= 60*60:
-        os.system(get_cookie_path)
+        os.system(f'python3 {cookie_path}')
         time.sleep(60)
-        os.system(get_main_path)
+        os.system(f'python3 {main_path}')
         count = 0
     else:
         time.sleep(40)
-        os.system(get_main_path)
+        os.system(f'python3 {main_path}')
 
