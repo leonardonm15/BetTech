@@ -132,7 +132,7 @@ def main_procedure():
                 for j, num_dupla_right in enumerate(arr_dupla_right):
                     if num_dupla_right >= 64:
                         if not matriz_dupla_aviso_right[i][j]:
-                            bot_tlg.alerta_dupla(i, j, "right", num_dupla_right, roulette)
+                            bot_tlg.alerta_dupla(i, j, "right", num_dupla_right, roulette, roulette['numbers'][0])
                             matriz_dupla_aviso_right[i][j] = 1
                     else:
                         matriz_dupla_aviso_right[i][j] = 0
@@ -142,7 +142,7 @@ def main_procedure():
                 for j, num_dupla_down in enumerate(arr_dupla_down):
                     if num_dupla_down >= 64:
                         if not matriz_dupla_aviso_down[i][j]:
-                            bot_tlg.alerta_dupla(i, j, "down", num_dupla_down, roulette)
+                            bot_tlg.alerta_dupla(i, j, "down", num_dupla_down, roulette, roulette['numbers'][0])
                             matriz_dupla_aviso_down[i][j] = 1
                     else:
                         matriz_dupla_aviso_down[i][j] = 0
@@ -155,7 +155,7 @@ def main_procedure():
                 for j, num in enumerate(arr_canto):
                     if num >= 35:
                         if not matriz_canto_aviso[i][j]:
-                            bot_tlg.alerta_canto(i, j, num, roulette)
+                            bot_tlg.alerta_canto(i, j, num, roulette, roulette['numbers'][0])
                             matriz_canto_aviso[i][j] = 1
                     else:
                         matriz_canto_aviso[i][j] = 0
@@ -166,7 +166,7 @@ def main_procedure():
             for i, num in enumerate(arr_rua):
                 if num >= 35:
                     if not arr_rua_aviso[i]:
-                        bot_tlg.alerta_rua(i, num, roulette)
+                        bot_tlg.alerta_rua(i, num, roulette, roulette['numbers'][0])
                         arr_rua_aviso[i] = 1
                 else:
                     arr_rua_aviso[i] = 0
@@ -177,7 +177,7 @@ def main_procedure():
             for i, num in enumerate(arr_rua_dupla):
                 if num >= 20:
                     if not arr_rua_dupla_aviso[i]:
-                        bot_tlg.alerta_rua_dupla(i, num, roulette)
+                        bot_tlg.alerta_rua_dupla(i, num, roulette, roulette['numbers'][0])
                         arr_rua_dupla_aviso[i] = 1
                 else:
                     arr_rua_dupla_aviso[i] = 0
@@ -188,7 +188,7 @@ def main_procedure():
             for i, num in enumerate(arr_direta):
                 if num >= 128:
                     if not arr_direta_aviso[i]:
-                        bot_tlg.alerta_direta(i, num, roulette)
+                        bot_tlg.alerta_direta(i, num, roulette, roulette['numbers'][0])
                         arr_direta_aviso[i] = 1
                 else:
                     arr_direta_aviso[i] = 0
@@ -202,7 +202,7 @@ def main_procedure():
                 if arr_direta[num] < 15:
                     avisar = False
             if avisar:
-                bot_tlg.alerta_do_zero(menor_num, roulette)
+                bot_tlg.alerta_do_zero(menor_num, roulette, roulette['numbers'][0])
 
         print(bot_tlg.mensagem)
 
