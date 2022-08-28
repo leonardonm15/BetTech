@@ -8,7 +8,7 @@ if __name__ == '__main__':
     while True:
         count += 40
         if count == 40 or count >= 60*60:
-            os.system("python3 utilities/get_cookie.py")
+            #os.system("python3 utilities/get_cookie.py")
             time.sleep(10)
             os.system("python3 main.py")
             count = 0

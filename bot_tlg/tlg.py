@@ -1,7 +1,9 @@
 import telegram
 import dotenv
 import os
-from ..utilities.conversions import *
+import sys
+sys.path.append("..")
+from utilities.conversions import *
 
 dotenv.load_dotenv()
 

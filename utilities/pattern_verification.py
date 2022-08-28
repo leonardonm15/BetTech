@@ -6,12 +6,10 @@ def update_rua(roulette, new_number, data):
 
 def uptade_rua_dupla(roulette, new_number, data):
     index = (new_number-1)//3
+    print(index)
     if index > 0:
         data[roulette]["patterns"]["rua_dupla"][index-1] = 0
-
-    if index < 10:
-        data[roulette]["patterns"]["rua_dupla"][index+1] = 0
-
+    data[roulette]["patterns"]["rua_dupla"][index] = 0
 
 def update_canto(roulette, new_number, data):
     is_corner = [
