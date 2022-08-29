@@ -16,10 +16,10 @@ from utilities.conversions import *
 
 roulette_historic_match_name = []
 bot_tlg = tlg.BotTlg()
-# roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
-#                     "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
-#                     "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
-roulettes_needed = ["Roulette"]
+
+roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
+                     "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
+                     "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
 
 
 if __name__ == '__main__':
@@ -242,6 +242,7 @@ if __name__ == '__main__':
             bot_tlg.alerta_do_zero(menor_num, roulette, last_number)
 
     print(bot_tlg.mensagem)
+    bot_tlg.send_message()
 
     #print(info_json)
     with open("./data/data.json", "w") as write_file:

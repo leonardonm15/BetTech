@@ -21,7 +21,7 @@ while True:
     if count >= 60*60:
         count = 0
 
-        #os.system(f'python3 {cookie_path}')
+        os.system(f'python3 {cookie_path}')
         time.sleep(40)
         os.system(f'python3 {main_path}')
         time.sleep(40)
