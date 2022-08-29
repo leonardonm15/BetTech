@@ -11,16 +11,15 @@ import undetected_chromedriver.v2 as uc
 # sys.path.insert(0, r"SuperBetTech\bot_tlg")
 from utilities.pattern_verification import pattern_verification
 from utilities.update_last_numbers import update_last_numbers
-import bot_tlg.tlg as tlg
+import tlg
 from utilities.conversions import *
 
 roulette_historic_match_name = []
 bot_tlg = tlg.BotTlg()
 
 roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Roulette", "Greek Roulette",
-                     "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
-                     "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
-
+                    "Turkish Roulette", "Roleta Brasileira", "Prestige Roulette", "Nederlandstalige Roulette",
+                    "Deutsches Roulette", "UK Roulette", "Bucharest Roulette", "Roulette Italiana"]
 
 if __name__ == '__main__':
     data = open('data/data.json')
@@ -46,13 +45,13 @@ if __name__ == '__main__':
     inner_frame = driver.find_element(By.ID, 'gamecontent')
     driver.switch_to.frame(inner_frame)
 
-    #click more frames
+    # click more frames
     more_games = driver.find_element(By.CLASS_NAME, "more-games-buttonN0Yt8ztSf1nWOgXO5ftu")
     more_games.click()
 
     time.sleep(0.5)
 
-    #click multiple roletes
+    # click multiple roletes
     multiple_rouletes = driver.find_element(By.CLASS_NAME, "lobby-category-item__icon_svg")
     multiple_rouletes.click()
 
@@ -66,7 +65,7 @@ if __name__ == '__main__':
     roulette_class_name = re.search('roulette-historyf[^"]*', to_search).group(0).replace(" ", ".")
     # formating '33\n21\n8\n2\n18\n21\nx32\n9\n22\n11' to "33", "21", "x32"
 
-    #while True:
+    # while True:
     data = open('data/data.json')
     info_json = json.load(data)
 
@@ -80,14 +79,15 @@ if __name__ == '__main__':
         for numero in historico:
             c += 1
             if numero < 0:
-                #print(f'numero popado {historico[c]}')
+                # print(f'numero popado {historico[c]}')
                 historico.pop(c)
 
-    #print(f"arrays com historico das roletas {number_historic_arrays}")
+    # print(f"arrays com historico das roletas {number_historic_arrays}")
 
-    all_roulettes_names = [element.text for element in driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
+    all_roulettes_names = [element.text for element in
+                           driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
 
-    #print(f"o numero de historicos é {len(number_historic_arrays)} e o numero de nome de roletas é {len(all_roulettes_names)}")
+    # print(f"o numero de historicos é {len(number_historic_arrays)} e o numero de nome de roletas é {len(all_roulettes_names)}")
 
     c = -1
     for roulette_name in all_roulettes_names:
@@ -95,11 +95,11 @@ if __name__ == '__main__':
         if roulette_name in roulettes_needed:
             roulette_historic_match_name.append((roulette_name, number_historic_arrays[c]))
 
-    #verificação de padrões junto com reconhecimento de novos numeros
+    # verificação de padrões junto com reconhecimento de novos numeros
     for group in roulette_historic_match_name:
         # group comes like that -. ("roulette name", [extracted numbers])
-        #print("info_json[group[0]]['numbers']: ", info_json[group[0]]['numbers'])
-        #print("group[1]: ", group[1])
+        # print("info_json[group[0]]['numbers']: ", info_json[group[0]]['numbers'])
+        # print("group[1]: ", group[1])
         new_numbers = update_last_numbers(info_json[group[0]]['numbers'], group[1])
 
         for number in new_numbers:
@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
         print(new_numbers)
 
-        #print(new_numbers)
+        # print(new_numbers)
         roulette = group[0]
         for pattern in info_json[roulette]["patterns"]:
             if pattern == "canto":
@@ -116,7 +116,8 @@ if __name__ == '__main__':
                 for i, arr in enumerate(info_json[roulette]["patterns"][pattern]):
                     for j in range(len(arr)):
                         nums = convert_canto_pos_to_nums(i, j)
-                        find_num = next((h for h, x in enumerate(new_numbers) if x == nums[0] or x == nums[1] or x == nums[2] or x == nums[3]), -1)
+                        find_num = next((h for h, x in enumerate(new_numbers) if
+                                         x == nums[0] or x == nums[1] or x == nums[2] or x == nums[3]), -1)
                         if find_num == -1:
                             arr[j] += len(new_numbers)
                         else:
@@ -144,19 +145,18 @@ if __name__ == '__main__':
                         info_json[roulette]["patterns"][pattern][i] += find_num
             elif pattern == "rua":
                 for i in range(len(info_json[roulette]["patterns"][pattern])):
-                    find_num = next((j for j, x in enumerate(new_numbers) if i*3 + 3 >= x >= i*3 + 1), -1)
+                    find_num = next((j for j, x in enumerate(new_numbers) if i * 3 + 3 >= x >= i * 3 + 1), -1)
                     if find_num == -1:
                         info_json[roulette]["patterns"][pattern][i] += len(new_numbers)
                     else:
                         info_json[roulette]["patterns"][pattern][i] += find_num
             elif pattern == "rua_dupla":
                 for i in range(len(info_json[roulette]["patterns"][pattern])):
-                    find_num = next((j for j, x in enumerate(new_numbers) if i*3 + 6 >= x >= i*3 + 1), -1)
+                    find_num = next((j for j, x in enumerate(new_numbers) if i * 3 + 6 >= x >= i * 3 + 1), -1)
                     if find_num == -1:
                         info_json[roulette]["patterns"][pattern][i] += len(new_numbers)
                     else:
                         info_json[roulette]["patterns"][pattern][i] += find_num
-
 
     for roulette in info_json:
         # verificar dupla
@@ -230,7 +230,7 @@ if __name__ == '__main__':
             else:
                 arr_direta_aviso[i] = 0
 
-        #verificacao "agrupamento do zero"
+        # verificacao "agrupamento do zero"
         avisar = True
         agrupamento_zero = [12, 35, 3, 26, 0, 32, 15]
         menor_num = 10000000
@@ -244,7 +244,7 @@ if __name__ == '__main__':
     print(bot_tlg.mensagem)
     bot_tlg.send_message()
 
-    #print(info_json)
+    # print(info_json)
     with open("./data/data.json", "w") as write_file:
         json.dump(info_json, write_file, indent=4)
     c = 0
