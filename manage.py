@@ -14,13 +14,12 @@ if platform.system() == 'Windows':
     makingjson_path = current_path + makingjson_path
 
 os.system(f'python {makingjson_path}')
-os.system(f'python {main_path}')
 count = 0
 while True:
     count += 40
     if count >= 60*60:
         count = 0
-
+        print('me acha')
         os.system(f'python {cookie_path}')
         time.sleep(40)
         os.system(f'python {main_path}')

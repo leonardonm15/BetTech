@@ -1,3 +1,5 @@
+from inspect import classify_class_attrs
+from random import random
 import time
 import telegram
 import dotenv
@@ -39,15 +41,22 @@ if __name__ == '__main__':
     time.sleep(30)
 
     # switch to iframes
-    outer_frame = driver.find_element(By.CLASS_NAME, 'inline-games-page-component__game-frame ')
-    driver.switch_to.frame(outer_frame)
 
-    inner_frame = driver.find_element(By.ID, 'gamecontent')
-    driver.switch_to.frame(inner_frame)
+    try:
+        random_ok_button = driver.find_element(By.CLASS_NAME, "modal-footer-btn modal-footer-btn_resolve modal-footer-btn_full")
+        print("trying")
+    except:
+        print("except")
+        outer_frame = driver.find_element(By.CLASS_NAME, 'inline-games-page-component__game-frame ')
+        driver.switch_to.frame(outer_frame)
+        inner_frame = driver.find_element(By.ID, 'gamecontent')
+        driver.switch_to.frame(inner_frame)
 
-    # click more frames
-    more_games = driver.find_element(By.CLASS_NAME, "more-games-buttonN0Yt8ztSf1nWOgXO5ftu")
-    more_games.click()
+        more_games = driver.find_element(By.CLASS_NAME, "more-games-buttonN0Yt8ztSf1nWOgXO5ftu")
+        more_games.click()
+    else:
+        print("else")
+        random_ok_button.click()
 
     time.sleep(0.5)
 
