@@ -28,16 +28,17 @@ class BotTlg:
         self.mensagem += f"AGRUPAMENTO DO ZERO (12, 35, 3, 26, 0, 32, 15) NÃO OCORRE HÁ {menor_num} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 4 TENTATIVAS\n"
 
     def alerta_canto(self, canto_i, canto_j, rodadas, roulette, ultimo_numero):
-        num1 = canto_j * 3 + (3 - canto_i) - 1
-        num2 = num1 + 1
-        num3 = num1 + 3
-        num4 = num2 + 3
+        nums_array = convert_canto_pos_to_nums(canto_i, canto_j)
+        num1 = nums_array[0]
+        num2 = nums_array[1]
+        num3 = nums_array[2]
+        num4 = nums_array[3]
         self.mensagem += f"O CANTO DOS NÚMEROS {num1}, {num2}, {num3} E {num4} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 8 TENTATIVAS \n"
 
     def alerta_direta(self, num, rodadas, roulette, ultimo_numero):
         self.mensagem += f"O NÚMERO {num} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 30 TENTATIVAS\n"
 
-    def alerta_dupla(self, dupla_i, dupla_j, direction, rodadas, roulette):
+    def alerta_dupla(self, dupla_i, dupla_j, direction, rodadas, roulette, ultimo_numero):
         num1 = convert_direta_pos_to_num(dupla_i, dupla_j)
         if direction == "right":
             num2 = num1 + 3

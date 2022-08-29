@@ -1,3 +1,4 @@
+from utilities.conversions import *
 
 def update_rua(roulette, new_number, data):
     index = (new_number-1)//3
@@ -9,7 +10,8 @@ def uptade_rua_dupla(roulette, new_number, data):
     print(index)
     if index > 0:
         data[roulette]["patterns"]["rua_dupla"][index-1] = 0
-    data[roulette]["patterns"]["rua_dupla"][index] = 0
+    if index <= 10:
+        data[roulette]["patterns"]["rua_dupla"][index] = 0
 
 def update_canto(roulette, new_number, data):
     is_corner = [
@@ -28,6 +30,7 @@ def update_canto(roulette, new_number, data):
     for move in moves:
         ii = move[0]
         jj = move[1]
+
         if line + ii < 0 or line + jj < 0:
             continue
         if is_corner[line+ii][column+jj]:
@@ -39,14 +42,7 @@ def update_direta(roulette, new_number, data):
 
 
 def update_dupla(roulette, new_number, data):
-    if new_number % 3 == 0:
-        line = 0
-    elif new_number % 3 == 2:
-        line = 1
-    else:
-        line = 2
-    column = (new_number - 1) // 3
-
+    [line, column] = convert_direta_num_to_pos(new_number)
     if line != 0:
         data[roulette]["patterns"]["dupla"]["down"][line-1][column] = 0
     if line != 2:
@@ -63,5 +59,4 @@ def pattern_verification(roulette, new_number, data):
     update_canto(roulette, new_number, data)
     update_direta(roulette, new_number, data)
     uptade_rua_dupla(roulette, new_number, data)
-    update_canto(roulette, new_number, data)
     update_dupla(roulette, new_number, data)

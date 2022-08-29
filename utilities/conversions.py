@@ -1,5 +1,5 @@
 def convert_direta_pos_to_num(i, j):
-    return ((2-i)*12 + 1) + j
+    return j*3 + 1 + (2-i)
 
 def convert_direta_num_to_pos(num):
     if num%3 == 0:
@@ -10,7 +10,6 @@ def convert_direta_num_to_pos(num):
         linha = 2
     coluna = (num-1)//3
     return [linha, coluna]
-
 
 def convert_canto_pos_to_nums(i, j):
     num = j*3 + 1
