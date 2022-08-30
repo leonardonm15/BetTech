@@ -26,7 +26,8 @@ for roulette in roulettes_needed:
             "dupla": {
                 "right": [[0 for _ in range(11)] for _ in range(3)],
                 "down": [[0 for _ in range(12)] for _ in range(2)]
-            }
+            },
+            "agrupamento": 0
         },
         "numbers": [-1 for _ in range(10)]
     }

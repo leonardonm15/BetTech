@@ -1,11 +1,7 @@
-from inspect import classify_class_attrs
-from random import random
+# -*- coding: utf-8 -*-
+
 import time
-import telegram
-import dotenv
-import os
 import re
-import sys
 import json
 from selenium.webdriver.common.by import By
 import undetected_chromedriver.v2 as uc
@@ -26,6 +22,9 @@ roulettes_needed = ["Roulette", "Football Roulette", "Hindi Roulette", "Speed Ro
 if __name__ == '__main__':
     data = open('data/data.json')
     info_json = json.load(data)
+
+    data_config = open('data/config.json')
+    info_config = json.load(data_config)
 
     cookies_data = open("data/cookies.JSON")
     cookies = json.load(cookies_data)
@@ -66,37 +65,24 @@ if __name__ == '__main__':
 
     time.sleep(3)
 
-    # getting roulette class name, find the elements and assemble the historic array
-    # '33\n21\n8\n2\n18\n21\n32\n9\n22\n11' <- the way that the historic comes out of the html
     table_square = [element.get_attribute("innerHTML") for element in
                     driver.find_elements(By.CLASS_NAME, "lobby-tables__item")]
     to_search = table_square[1]
     roulette_class_name = re.search('roulette-historyf[^"]*', to_search).group(0).replace(" ", ".")
-    # formating '33\n21\n8\n2\n18\n21\nx32\n9\n22\n11' to "33", "21", "x32"
-
-    # while True:
-    data = open('data/data.json')
-    info_json = json.load(data)
 
     number_historic_arrays = [elements.text.replace("x", "-").split("\n") for elements in
                               driver.find_elements(By.CLASS_NAME, roulette_class_name)]
     number_historic_arrays = [[int(number) for number in array] for array in number_historic_arrays]
 
-    # get the multipliers out, like x120 or x37
     for historico in number_historic_arrays:
         c = -1
         for numero in historico:
             c += 1
             if numero < 0:
-                # print(f'numero popado {historico[c]}')
                 historico.pop(c)
-
-    # print(f"arrays com historico das roletas {number_historic_arrays}")
 
     all_roulettes_names = [element.text for element in
                            driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
-
-    # print(f"o numero de historicos é {len(number_historic_arrays)} e o numero de nome de roletas é {len(all_roulettes_names)}")
 
     c = -1
     for roulette_name in all_roulettes_names:
@@ -120,6 +106,9 @@ if __name__ == '__main__':
         # print(new_numbers)
         roulette = group[0]
         for pattern in info_json[roulette]["patterns"]:
+            if info_config[pattern] == 0 and pattern != "direta":
+                # padrao esta desligado
+                continue
             if pattern == "canto":
                 verify = [[0 for _ in range(11)] for _ in range(2)]
                 for i, arr in enumerate(info_json[roulette]["patterns"][pattern]):
@@ -167,88 +156,87 @@ if __name__ == '__main__':
                     else:
                         info_json[roulette]["patterns"][pattern][i] += find_num
 
-    for roulette in info_json:
-        # verificar dupla
-        last_number = info_json[roulette]['numbers'][0]
-        matriz_dupla_aviso_right = info_json[roulette]["avisos"]["dupla"]["right"]
-        matriz_dupla_right = info_json[roulette]["patterns"]["dupla"]["right"]
-        for i, arr_dupla_right in enumerate(matriz_dupla_right):
-            for j, num_dupla_right in enumerate(arr_dupla_right):
-                if num_dupla_right >= 64:
-                    if not matriz_dupla_aviso_right[i][j]:
-                        bot_tlg.alerta_dupla(i, j, "right", num_dupla_right, roulette, last_number)
-                        matriz_dupla_aviso_right[i][j] = 1
-                else:
-                    matriz_dupla_aviso_right[i][j] = 0
-        matriz_dupla_aviso_down = info_json[roulette]["avisos"]["dupla"]["down"]
-        matriz_dupla_down = info_json[roulette]["patterns"]["dupla"]["down"]
-        for i, arr_dupla_down in enumerate(matriz_dupla_down):
-            for j, num_dupla_down in enumerate(arr_dupla_down):
-                if num_dupla_down >= 64:
-                    if not matriz_dupla_aviso_down[i][j]:
-                        bot_tlg.alerta_dupla(i, j, "down", num_dupla_down, roulette, last_number)
-                        matriz_dupla_aviso_down[i][j] = 1
-                else:
-                    matriz_dupla_aviso_down[i][j] = 0
+    with open("./data/data.json", "w") as write_file:
+        json.dump(info_json, write_file, indent=4)
 
-        with open("./data/data.json", "w") as write_file:
-            json.dump(info_json, write_file, indent=4)
+    #verify things to see if it has to send some message
+    for roulette in info_json:
+        last_number = info_json[roulette]['numbers'][0]
+        # verificar dupla
+        if info_config["dupla"] == 1:
+            matriz_dupla_aviso_right = info_json[roulette]["avisos"]["dupla"]["right"]
+            matriz_dupla_right = info_json[roulette]["patterns"]["dupla"]["right"]
+            for i, arr_dupla_right in enumerate(matriz_dupla_right):
+                for j, num_dupla_right in enumerate(arr_dupla_right):
+                    if num_dupla_right >= 64:
+                        if num_dupla_right <= 64+17:
+                            bot_tlg.alerta_dupla(i, j, "right", num_dupla_right, roulette, last_number)
+                    else:
+                        matriz_dupla_aviso_right[i][j] = 0
+            matriz_dupla_aviso_down = info_json[roulette]["avisos"]["dupla"]["down"]
+            matriz_dupla_down = info_json[roulette]["patterns"]["dupla"]["down"]
+            for i, arr_dupla_down in enumerate(matriz_dupla_down):
+                for j, num_dupla_down in enumerate(arr_dupla_down):
+                    if num_dupla_down >= 64:
+                        if num_dupla_down <= 64+17:
+                            bot_tlg.alerta_dupla(i, j, "down", num_dupla_down, roulette, last_number)
 
         # verificar canto
-        matriz_canto_aviso = info_json[roulette]["avisos"]["canto"]
-        matriz_canto = info_json[roulette]["patterns"]["canto"]
-        for i, arr_canto in enumerate(matriz_canto):
-            for j, num in enumerate(arr_canto):
-                if num >= 35:
-                    if not matriz_canto_aviso[i][j]:
-                        bot_tlg.alerta_canto(i, j, num, roulette, last_number)
-                        matriz_canto_aviso[i][j] = 1
-                else:
-                    matriz_canto_aviso[i][j] = 0
+        if info_config["canto"] == 1:
+            matriz_canto_aviso = info_json[roulette]["avisos"]["canto"]
+            matriz_canto = info_json[roulette]["patterns"]["canto"]
+            for i, arr_canto in enumerate(matriz_canto):
+                for j, num in enumerate(arr_canto):
+                    if num >= 35:
+                        if num <= 35+8:
+                            bot_tlg.alerta_canto(i, j, num, roulette, last_number)
 
         # verificar rua
-        arr_rua_aviso = info_json[roulette]["avisos"]["rua"]
-        arr_rua = info_json[roulette]["patterns"]["rua"]
-        for i, num in enumerate(arr_rua):
-            if num >= 35:
-                if not arr_rua_aviso[i]:
-                    bot_tlg.alerta_rua(i, num, roulette, last_number)
-                    arr_rua_aviso[i] = 1
-            else:
-                arr_rua_aviso[i] = 0
+        if info_config["rua"] == 1:
+            arr_rua_aviso = info_json[roulette]["avisos"]["rua"]
+            arr_rua = info_json[roulette]["patterns"]["rua"]
+            for i, num in enumerate(arr_rua):
+                if num >= 35:
+                    if num <= 36:
+                        bot_tlg.alerta_rua(i, num, roulette, last_number)
 
-        # verificar rua dupla
-        arr_rua_dupla_aviso = info_json[roulette]["avisos"]["rua_dupla"]
-        arr_rua_dupla = info_json[roulette]["patterns"]["rua_dupla"]
-        for i, num in enumerate(arr_rua_dupla):
-            if num >= 20:
-                if not arr_rua_dupla_aviso[i]:
-                    bot_tlg.alerta_rua_dupla(i, num, roulette, last_number)
-                    arr_rua_dupla_aviso[i] = 1
-            else:
-                arr_rua_dupla_aviso[i] = 0
+        # verificar rua dupla (necessita de uns ajustes)
+        if info_config["rua_dupla"] == 1:
+            arr_rua_dupla_aviso = info_json[roulette]["avisos"]["rua_dupla"]
+            arr_rua_dupla = info_json[roulette]["patterns"]["rua_dupla"]
+            for i, num in enumerate(arr_rua_dupla):
+                if num >= 20:
+                    if not arr_rua_dupla_aviso[i]:
+                        bot_tlg.alerta_rua_dupla(i, num, roulette, last_number)
+                        arr_rua_dupla_aviso[i] = 1
+                else:
+                    arr_rua_dupla_aviso[i] = 0
 
         # verificar direta
-        arr_direta_aviso = info_json[roulette]["avisos"]["direta"]
-        arr_direta = info_json[roulette]["patterns"]["direta"]
-        for i, num in enumerate(arr_direta):
-            if num >= 128:
-                if not arr_direta_aviso[i]:
-                    bot_tlg.alerta_direta(i, num, roulette, last_number)
-                    arr_direta_aviso[i] = 1
-            else:
-                arr_direta_aviso[i] = 0
+        if info_config["direta"] == 1:
+            arr_direta_aviso = info_json[roulette]["avisos"]["direta"]
+            arr_direta = info_json[roulette]["patterns"]["direta"]
+            for i, num in enumerate(arr_direta):
+                if num >= 128:
+                    if not arr_direta_aviso[i]:
+                        bot_tlg.alerta_direta(i, num, roulette, last_number)
+                        arr_direta_aviso[i] = 1
+                else:
+                    arr_direta_aviso[i] = 0
 
         # verificacao "agrupamento do zero"
-        avisar = True
-        agrupamento_zero = [12, 35, 3, 26, 0, 32, 15]
-        menor_num = 10000000
-        for num in agrupamento_zero:
-            menor_num = min(arr_direta[num], menor_num)
-            if arr_direta[num] < 15:
-                avisar = False
-        if avisar:
-            bot_tlg.alerta_do_zero(menor_num, roulette, last_number)
+        if info_config["agrupamento"] == 1:
+            arr_direta = info_json[roulette]["patterns"]["direta"]
+            avisar = True
+            agrupamento_zero = [12, 35, 3, 26, 0, 32, 15]
+            menor_num = 10000000
+            for num in agrupamento_zero:
+                menor_num = min(arr_direta[num], menor_num)
+                if arr_direta[num] < 15:
+                    avisar = False
+            if avisar:
+                if menor_num <= 15+4:
+                    bot_tlg.alerta_do_zero(menor_num, roulette, last_number)
 
     print(bot_tlg.mensagem)
     bot_tlg.send_message()
