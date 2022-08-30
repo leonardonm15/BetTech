@@ -37,9 +37,9 @@ class BotTlg:
 
     def alerta_do_zero(self, rodadas, roulette, ultimo_numero):
         if rodadas < 19:
-            self.mensagem += f"🤖AGRUPAMENTO | NA ROLETA {roulette}, ULTIMO NÚMERO -> {ultimo_numero} ⛔          🤖\n\n"
-        if rodadas == 19:
             self.mensagem += f"🤖AGRUPAMENTO | NA ROLETA {roulette}, ULTIMO NÚMERO -> {ultimo_numero} ✅ | TENTATIVAS RESTANTES: {47 - rodadas}            🤖\n\n"
+        if rodadas == 19:
+            self.mensagem += f"🤖AGRUPAMENTO | NA ROLETA {roulette}, ULTIMO NÚMERO -> {ultimo_numero} ⛔          🤖\n\n"
 
     def alerta_canto(self, canto_i, canto_j, rodadas, roulette, ultimo_numero):
         nums_array = conversions.convert_canto_pos_to_nums(canto_i, canto_j)

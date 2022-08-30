@@ -27,8 +27,8 @@ while True:
     if count >= 60*60 or count == 40:
         count = 0
         print('me acha')
-        #os.system(f'{python_command} {cookie_path}')
-        #time.sleep(40)
+        os.system(f'{python_command} {cookie_path}')
+        time.sleep(40)
         os.system(f'{python_command} {main_path}')
         time.sleep(40)
     else:
