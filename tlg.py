@@ -17,15 +17,24 @@ class BotTlg:
         num1 = index_rua * 3 + 1
         num2 = num1 + 1
         num3 = num2 + 1
-        self.mensagem += f"🤖           A RUA DOS NÚMEROS {num1}, {num2} e {num3} NÃO OCORRE HÁ {qnt_rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 11 TENTATIVAS           🤖\n"
+
+        if qnt_rodadas == 47: # 11 tentativas
+            self.mensagem += f"🤖*RUA* | {num1}, {num2} e {num3} NA ROLETA *{roulette}* | ULTIMO NUMERO -> {ultimo_numero} ⛔           🤖\n\n"
+            return
+
+        if qnt_rodadas < 47:
+            self.mensagem += f"🤖RUA | {num1}, {num2} e {num3} NA {roulette} | ULTIMO NUMERO -> {ultimo_numero} ✅ | TENTATIVA DE NUMERO {47 - qnt_rodadas}      🤖\n\n"
+        
+        else:
+            return
 
     def alerta_rua_dupla(self, index_rua_dupla, rodadas, roulette, ultimo_numero):
         num1 = index_rua_dupla * 3 + 1
         num2 = num1 + 5
-        self.mensagem += f"🤖           A RUA DUPLA DOS NÚMEROS {num1} A {num2} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 11 TENTATIVAS           🤖\n"
+        self.mensagem += f"🤖           A RUA DUPLA DOS NÚMEROS {num1} A {num2} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 11 TENTATIVAS           🤖\n\n"
 
     def alerta_do_zero(self, menor_num, roulette, ultimo_numero):
-        self.mensagem += f"🤖           AGRUPAMENTO DO ZERO (12, 35, 3, 26, 0, 32, 15) NÃO OCORRE HÁ {menor_num} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 4 TENTATIVAS           🤖\n"
+        self.mensagem += f"🤖           AGRUPAMENTO DO ZERO (12, 35, 3, 26, 0, 32, 15) NÃO OCORRE HÁ {menor_num} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 4 TENTATIVAS           🤖\n\n"
 
     def alerta_canto(self, canto_i, canto_j, rodadas, roulette, ultimo_numero):
         nums_array = conversions.convert_canto_pos_to_nums(canto_i, canto_j)
@@ -33,10 +42,10 @@ class BotTlg:
         num2 = nums_array[1]
         num3 = nums_array[2]
         num4 = nums_array[3]
-        self.mensagem += f"🤖           O CANTO DOS NÚMEROS {num1}, {num2}, {num3} E {num4} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 8 TENTATIVAS           🤖\n"
+        self.mensagem += f"🤖           O CANTO DOS NÚMEROS {num1}, {num2}, {num3} E {num4} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 8 TENTATIVAS           🤖\n\n"
 
     def alerta_direta(self, num, rodadas, roulette, ultimo_numero):
-        self.mensagem += f"🤖           O NÚMERO {num} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 30 TENTATIVAS           🤖\n"
+        self.mensagem += f"🤖           O NÚMERO {num} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 30 TENTATIVAS           🤖\n\n"
 
     def alerta_dupla(self, dupla_i, dupla_j, direction, rodadas, roulette, ultimo_numero):
         num1 = conversions.convert_direta_pos_to_num(dupla_i, dupla_j)
@@ -44,7 +53,7 @@ class BotTlg:
             num2 = num1 + 3
         else:
             num2 = num1 + 1
-        self.mensagem += f"🤖           A DUPLA DOS NÚMEROS {num1} E {num2} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 17 TENTATIVAS           🤖\n"
+        self.mensagem += f"🤖           A DUPLA DOS NÚMEROS {num1} E {num2} NÃO OCORRE HÁ {rodadas} RODADAS NA ROLETA {roulette}, ULTIMO NÚMERO A SAIR {ultimo_numero}, 17 TENTATIVAS           🤖\n\n"
 
     def send_message(self):
         if self.mensagem == "-----------🎲----------- \n":
