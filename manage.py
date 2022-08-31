@@ -23,7 +23,7 @@ else:
 os.system(f'{python_command} {makingjson_path}')
 count = 0
 while True:
-    count += 0
+    count += 40
     if count >= 60*60:
         count = 0
         print('me acha')

@@ -29,5 +29,6 @@ if __name__ == '__main__':
     with open('./data/cookies.JSON', 'w') as wf:
         json.dump(cookies, wf)
 
+    print(cookies)
     # print(cookies)
     driver.close()

@@ -46,7 +46,7 @@ if __name__ == '__main__':
         print("trying")
     except:
         print("except")
-        outer_frame = driver.find_element(By.CLASS_NAME, 'inline-games-page-component__game-frame ')
+        outer_frame = driver.find_element(By.CLASS_NAME, 'inline-games-page-component__game-frame')
         driver.switch_to.frame(outer_frame)
         inner_frame = driver.find_element(By.ID, 'gamecontent')
         driver.switch_to.frame(inner_frame)
