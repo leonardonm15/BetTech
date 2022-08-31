@@ -23,8 +23,8 @@ else:
 os.system(f'{python_command} {makingjson_path}')
 count = 0
 while True:
-    count += 40
-    if count >= 60*60 or count == 40:
+    count += 0
+    if count >= 60*60:
         count = 0
         print('me acha')
         os.system(f'{python_command} {cookie_path}')
