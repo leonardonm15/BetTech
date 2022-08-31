@@ -20,17 +20,20 @@ if platform.system() == 'Windows':
 else:
     python_command = "python3"
 
+print(python_command, )
+
 os.system(f'{python_command} {makingjson_path}')
 count = 0
 while True:
     count += 40
-    if count >= 60*60:
+    print('me acha')
+    if count >= 60*60 or count == 40:
         count = 0
-        print('me acha')
         os.system(f'{python_command} {cookie_path}')
         time.sleep(40)
         os.system(f'{python_command} {main_path}')
         time.sleep(40)
     else:
         os.system(f'{python_command} {main_path}')
+        print('sdafasf me acha')
         time.sleep(40)

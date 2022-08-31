@@ -30,7 +30,7 @@ if __name__ == '__main__':
     cookies = json.load(cookies_data)
 
     options = uc.ChromeOptions()
-    driver = uc.Chrome(options=options, cookies=cookies)
+    driver = uc.Chrome(options=options, cookies=cookies, version_main=104)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
     for cookie in cookies:

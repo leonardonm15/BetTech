@@ -9,7 +9,8 @@ cookies = {}
 
 if __name__ == '__main__':
     options = uc.ChromeOptions()
-    driver = uc.Chrome(options=options)
+    driver = uc.Chrome(options=options, version_main=104)
+    print("hello")
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
     time.sleep(0.5)
