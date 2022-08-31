@@ -235,7 +235,7 @@ if __name__ == '__main__':
                 if arr_direta[num] < 15:
                     avisar = False
             if avisar:
-                if menor_num <= 15+4:
+                if menor_num <= 14+4:
                     bot_tlg.alerta_do_zero(menor_num, roulette, last_number)
 
     print(bot_tlg.mensagem)
