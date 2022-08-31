@@ -232,7 +232,7 @@ if __name__ == '__main__':
             menor_num = 10000000
             for num in agrupamento_zero:
                 menor_num = min(arr_direta[num], menor_num)
-                if arr_direta[num] < 15:
+                if arr_direta[num] < 14:
                     avisar = False
             if avisar:
                 if menor_num <= 14+4:
