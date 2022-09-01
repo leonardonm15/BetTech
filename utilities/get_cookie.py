@@ -9,8 +9,7 @@ cookies = {}
 
 if __name__ == '__main__':
     options = uc.ChromeOptions()
-    driver = uc.Chrome(options=options, version_main=104)
-    print("hello")
+    driver = uc.Chrome(options=options)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
     time.sleep(0.5)
@@ -30,6 +29,4 @@ if __name__ == '__main__':
     with open('./data/cookies.JSON', 'w') as wf:
         json.dump(cookies, wf)
 
-    print(cookies)
-    # print(cookies)
     driver.close()

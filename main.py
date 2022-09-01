@@ -28,19 +28,19 @@ if __name__ == '__main__':
 
     cookies_data = open("data/cookies.JSON")
     cookies = json.load(cookies_data)
+    print(cookies)
 
     options = uc.ChromeOptions()
-    driver = uc.Chrome(options=options, cookies=cookies, version_main=104)
+    driver = uc.Chrome(options=options, cookies=cookies)
     driver.get("https://livecasino.bet365.com/Play/LiveRoulette")
 
     for cookie in cookies:
         driver.add_cookie({"name": cookie, "value": cookies[cookie]})
     driver.refresh()
 
-    time.sleep(30)
+    time.sleep(20); 
 
     # switch to iframes
-
     try:
         random_ok_button = driver.find_element(By.CLASS_NAME, "modal-footer-btn modal-footer-btn_resolve modal-footer-btn_full")
         print("trying")
