@@ -25,7 +25,7 @@ count = 0
 while True:
     if count >= 60*60 or count == 0:
         count = 0
-        #os.system(f'{python_command} {cookie_path}')
+        os.system(f'{python_command} {cookie_path}')
         time.sleep(40)
         count += 40
         os.system(f'{python_command} {main_path}')
