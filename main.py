@@ -38,7 +38,7 @@ if __name__ == '__main__':
         driver.add_cookie({"name": cookie, "value": cookies[cookie]})
     driver.refresh()
 
-    time.sleep(20); 
+    time.sleep(30)
 
     # switch to iframes
     try:
@@ -84,6 +84,13 @@ if __name__ == '__main__':
     all_roulettes_names = [element.text for element in
                            driver.find_elements(By.CLASS_NAME, "lobby-table__name-container")]
 
+    #corrigindo caso haja roletas "bonus"
+    while len(number_historic_arrays) != len(all_roulettes_names):
+        if len(number_historic_arrays) < len(all_roulettes_names):
+            all_roulettes_names.pop(0)
+        else:
+            number_historic_arrays.pop(0)
+
     c = -1
     for roulette_name in all_roulettes_names:
         c += 1
@@ -101,7 +108,7 @@ if __name__ == '__main__':
             pattern_verification(group[0], number, info_json)
         info_json[group[0]]['numbers'] = group[1]
 
-        print(new_numbers)
+        print(group[0], new_numbers)
 
         # print(new_numbers)
         roulette = group[0]

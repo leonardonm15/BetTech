@@ -22,6 +22,7 @@ else:
 
 os.system(f'{python_command} {makingjson_path}')
 count = 0
+count_err = 0
 while True:
     if count >= 60*60 or count == 0:
         count = 0
@@ -32,7 +33,14 @@ while True:
         time.sleep(40)
         count += 40
     else:
-        os.system(f'{python_command} {main_path}')
-        print('sdafasf me acha')
+        try:
+            os.system(f'{python_command} {main_path}')
+        except:
+            count_err += 1
+        else:
+            count_err = 0
+        if count_err >= 10:
+            print("muitos erros seguidos, reiniciando bot")
+            os.system(f'{python_command} {makingjson_path}')
         time.sleep(40)
         count += 40
