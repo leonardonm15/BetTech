@@ -14,10 +14,10 @@ if __name__ == '__main__':
 
     time.sleep(0.5)
     usernameInput = driver.find_element(By.ID, "txtUsername")
-    usernameInput.send_keys("Midopazo")
+    usernameInput.send_keys("doidodocassino")
     time.sleep(0.5)
     passwordInput = driver.find_element(By.ID, "txtPassword")
-    passwordInput.send_keys("jppedrosaa")
+    passwordInput.send_keys("cassino")
     time.sleep(0.5)
     passwordInput.send_keys(Keys.RETURN)
 
