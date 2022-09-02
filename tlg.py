@@ -47,9 +47,9 @@ class BotTlg:
         num2 = nums_array[1]
         num3 = nums_array[2]
         num4 = nums_array[3]
-        if rodadas < 43:
-            self.mensagem += f"🤖CANTO | {num1}, {num2}, {num3} E {num4} NA ROLETA {roulette}, ULTIMO NÚMERO -> {ultimo_numero} ✅ | TENTATIVAS RESTANTES: {47 - rodadas}            🤖\n\n"
-        if rodadas == 43:
+        if rodadas < 44:
+            self.mensagem += f"🤖CANTO | {num1}, {num2}, {num3} E {num4} NA ROLETA {roulette}, ULTIMO NÚMERO -> {ultimo_numero} ✅ | TENTATIVAS RESTANTES: {44 - rodadas}            🤖\n\n"
+        if rodadas == 44:
             self.mensagem += f"🤖CANTO | {num1}, {num2}, {num3} E {num4} NA ROLETA {roulette}, ULTIMO NÚMERO -> {ultimo_numero }⛔            🤖\n\n"
 
     def alerta_direta(self, num, rodadas, roulette, ultimo_numero):

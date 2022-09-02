@@ -239,10 +239,10 @@ if __name__ == '__main__':
             menor_num = 10000000
             for num in agrupamento_zero:
                 menor_num = min(arr_direta[num], menor_num)
-                if arr_direta[num] < 14:
+                if arr_direta[num] < 17:
                     avisar = False
             if avisar:
-                if menor_num <= 14+4:
+                if menor_num <= 17+4:
                     bot_tlg.alerta_do_zero(menor_num, roulette, last_number)
 
     print(bot_tlg.mensagem)
