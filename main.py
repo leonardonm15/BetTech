@@ -194,8 +194,8 @@ if __name__ == '__main__':
             matriz_canto = info_json[roulette]["patterns"]["canto"]
             for i, arr_canto in enumerate(matriz_canto):
                 for j, num in enumerate(arr_canto):
-                    if num >= 35:
-                        if num <= 35+8:
+                    if num >= 43:
+                        if num <= 43+8:
                             bot_tlg.alerta_canto(i, j, num, roulette, last_number)
 
         # verificar rua
@@ -203,8 +203,8 @@ if __name__ == '__main__':
             arr_rua_aviso = info_json[roulette]["avisos"]["rua"]
             arr_rua = info_json[roulette]["patterns"]["rua"]
             for i, num in enumerate(arr_rua):
-                if num >= 35:
-                    if num <= 36:
+                if num >= 37:
+                    if num <= 38:
                         bot_tlg.alerta_rua(i, num, roulette, last_number)
 
         # verificar rua dupla (necessita de uns ajustes)
@@ -239,10 +239,10 @@ if __name__ == '__main__':
             menor_num = 10000000
             for num in agrupamento_zero:
                 menor_num = min(arr_direta[num], menor_num)
-                if arr_direta[num] < 17:
+                if arr_direta[num] < 18:
                     avisar = False
             if avisar:
-                if menor_num <= 17+4:
+                if menor_num <= 18+4:
                     bot_tlg.alerta_do_zero(menor_num, roulette, last_number)
 
     print(bot_tlg.mensagem)
