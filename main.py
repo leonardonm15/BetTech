@@ -113,7 +113,7 @@ if __name__ == '__main__':
         # print(new_numbers)
         roulette = group[0]
         for pattern in info_json[roulette]["patterns"]:
-            if info_config[pattern] == 0 and pattern != "direta":
+            if info_config["ativo"][pattern] == 0 and pattern != "direta":
                 # padrao esta desligado
                 continue
             if pattern == "canto":
@@ -170,13 +170,14 @@ if __name__ == '__main__':
     for roulette in info_json:
         last_number = info_json[roulette]['numbers'][0]
         # verificar dupla
-        if info_config["dupla"] == 1:
+        if info_config["ativo"]["dupla"] == 1:
+            rodadas = info_config["rodadas"]["dupla"]
             matriz_dupla_aviso_right = info_json[roulette]["avisos"]["dupla"]["right"]
             matriz_dupla_right = info_json[roulette]["patterns"]["dupla"]["right"]
             for i, arr_dupla_right in enumerate(matriz_dupla_right):
                 for j, num_dupla_right in enumerate(arr_dupla_right):
-                    if num_dupla_right >= 64:
-                        if num_dupla_right <= 64+17:
+                    if num_dupla_right >= rodadas:
+                        if num_dupla_right <= rodadas+17:
                             bot_tlg.alerta_dupla(i, j, "right", num_dupla_right, roulette, last_number)
                     else:
                         matriz_dupla_aviso_right[i][j] = 0
@@ -184,35 +185,38 @@ if __name__ == '__main__':
             matriz_dupla_down = info_json[roulette]["patterns"]["dupla"]["down"]
             for i, arr_dupla_down in enumerate(matriz_dupla_down):
                 for j, num_dupla_down in enumerate(arr_dupla_down):
-                    if num_dupla_down >= 64:
-                        if num_dupla_down <= 64+17:
+                    if num_dupla_down >= rodadas:
+                        if num_dupla_down <= rodadas+17:
                             bot_tlg.alerta_dupla(i, j, "down", num_dupla_down, roulette, last_number)
 
         # verificar canto
-        if info_config["canto"] == 1:
+        if info_config["ativo"]["canto"] == 1:
             matriz_canto_aviso = info_json[roulette]["avisos"]["canto"]
             matriz_canto = info_json[roulette]["patterns"]["canto"]
+            rodadas = info_config["rodadas"]["canto"]
             for i, arr_canto in enumerate(matriz_canto):
                 for j, num in enumerate(arr_canto):
-                    if num >= 43:
-                        if num <= 43+8:
+                    if num >= rodadas:
+                        if num <= rodadas+8:
                             bot_tlg.alerta_canto(i, j, num, roulette, last_number)
 
         # verificar rua
-        if info_config["rua"] == 1:
+        if info_config["ativo"]["rua"] == 1:
             arr_rua_aviso = info_json[roulette]["avisos"]["rua"]
             arr_rua = info_json[roulette]["patterns"]["rua"]
+            rodadas = info_config["rodadas"]["rua"]
             for i, num in enumerate(arr_rua):
-                if num >= 37:
-                    if num <= 38:
+                if num >= rodadas:
+                    if num <= rodadas+1:
                         bot_tlg.alerta_rua(i, num, roulette, last_number)
 
         # verificar rua dupla (necessita de uns ajustes)
-        if info_config["rua_dupla"] == 1:
+        if info_config["ativo"]["rua_dupla"] == 1:
             arr_rua_dupla_aviso = info_json[roulette]["avisos"]["rua_dupla"]
             arr_rua_dupla = info_json[roulette]["patterns"]["rua_dupla"]
+            rodadas = info_config["rodadas"]["rua_dupla"]
             for i, num in enumerate(arr_rua_dupla):
-                if num >= 20:
+                if num >= rodadas:
                     if not arr_rua_dupla_aviso[i]:
                         bot_tlg.alerta_rua_dupla(i, num, roulette, last_number)
                         arr_rua_dupla_aviso[i] = 1
@@ -220,11 +224,12 @@ if __name__ == '__main__':
                     arr_rua_dupla_aviso[i] = 0
 
         # verificar direta
-        if info_config["direta"] == 1:
+        if info_config["ativo"]["direta"] == 1:
             arr_direta_aviso = info_json[roulette]["avisos"]["direta"]
             arr_direta = info_json[roulette]["patterns"]["direta"]
+            rodadas = info_config["rodadas"]["direta"]
             for i, num in enumerate(arr_direta):
-                if num >= 128:
+                if num >= rodadas:
                     if not arr_direta_aviso[i]:
                         bot_tlg.alerta_direta(i, num, roulette, last_number)
                         arr_direta_aviso[i] = 1
@@ -232,17 +237,18 @@ if __name__ == '__main__':
                     arr_direta_aviso[i] = 0
 
         # verificacao "agrupamento do zero"
-        if info_config["agrupamento"] == 1:
+        if info_config["ativo"]["agrupamento"] == 1:
             arr_direta = info_json[roulette]["patterns"]["direta"]
             avisar = True
             agrupamento_zero = [12, 35, 3, 26, 0, 32, 15]
             menor_num = 10000000
+            rodadas = info_config["rodadas"]["agrupamento"]
             for num in agrupamento_zero:
                 menor_num = min(arr_direta[num], menor_num)
-                if arr_direta[num] < 14:
+                if arr_direta[num] < rodadas:
                     avisar = False
             if avisar:
-                if menor_num <= 14+4:
+                if menor_num <= rodadas+4:
                     bot_tlg.alerta_do_zero(menor_num, roulette, last_number)
 
     print(bot_tlg.mensagem)

@@ -14,6 +14,7 @@ class BotTlg:
         self.bot = telegram.Bot(self.token_tlg)
 
 
+
     def alerta_rua(self, index_rua, qnt_rodadas, roulette, ultimo_numero):
         num1 = index_rua * 3 + 1
         num2 = num1 + 1

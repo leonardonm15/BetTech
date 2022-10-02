@@ -1,8 +1,18 @@
 {
-  "rua": 1,
-  "rua_dupla": 0,
-  "direta": 0,
-  "dupla": 0,
-  "canto": 1,
-  "agrupamento": 1
-}
+  "ativo": {
+    "rua": 1,
+    "rua_dupla": 0,
+    "direta": 0,
+    "dupla": 0,
+    "canto": 1,
+    "agrupamento": 1
+  },
+  "rodadas": {
+    "rua": 37,
+    "rua_dupla": 20,
+    "direta": 128,
+    "dupla": 64,
+    "canto": 43,
+    "agrupamento": 14
+  }
+  }
